@@ -9,16 +9,12 @@ import os
 import occo.infrastructure-processor as ip
 
 class InfrastructureIDTakenException(Exception):
-    def __init__(self, msg = ""):
-	self.msg = msg
-    def __str__(self):
-	return repr(self.msg)
+    def __init__(self):
+	pass
 
 class InfrastructureIDNotFoundException(Exception):
-    def __init__(self, msg = ""):
-	self.msg = msg
-    def __str__(self):
-	return repr(self.msg)
+    def __init__(self):
+	pass
 
 class ProcessWrapper(object):
     def __init__(self, ip_config, skel_config):
@@ -39,7 +35,7 @@ class ProcessManager(object):
 	self.process_table = dict()
     def add(self, infra_id):
 	if infra_id in self.process_table:
-	    raise InfrastructureIDTakenException("Unable to add infrastructure - ID already in use")
+	    raise InfrastructureIDTakenException()
 	else: 
 	    infra_process = ProcessWrapper(self.ip_config, self. skel_config)
 	    p = Process(target=infra_process, args=())
@@ -55,7 +51,7 @@ class ProcessManager(object):
 		os.signal(SIGKILL, process_id)
 	    del self.process_table[infra_id]
 	else:
-	    raise InfrastructureIDNotFoundException("Error removing process - no such Infrastructure ID")
+	    raise InfrastructureIDNotFoundException()
     def get(self, infra_id):
 	return self.process_table[infra_id]
     def abort(self, infra_id):

@@ -60,8 +60,12 @@ class ProcessManager(object):
     def abort(self, infra_id):
 	pass
     def wait_abort(self, infra_id):
-	while not is_aborted(infra_id):
-	    pass
+	while True:
+	    flag = is_aborted(infra_id)
+	    if flag is None
+		raise RuntimeError("Invalid infrastructure abort")
+	    elif flag is True:
+		break
     def is_aborted(self, infra_id):
 	if infra_id not in self.process_table:
 	    raise InfrastructureIDNotFoundException()

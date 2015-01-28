@@ -6,6 +6,7 @@
 
 from multiprocessing import Process
 import os
+import occo.infrastructure-processor as ip
 
 class InfrastructureIDTakenException(Exception):
     def __init__(self, msg = ""):
@@ -20,20 +21,27 @@ class InfrastructureIDNotFoundException(Exception):
 	return repr(self.msg)
 
 class ProcessWrapper(object):
-    def __init__(self, ip_config):
+    def __init__(self, ip_config, skel_config):
 	self.ip_config = ip_config
+	self.skel_config = skel_config
     def __call__(self):
-        pass
-
+	try:
+    	    infra_processor = ip.InfraProcessor(**self.ip_config)
+	    infra_skeleton = ip.RemoteInfraProcessorSkeleton(backend_ip = infra_processor, **self.skel_config)
+	    while True:
+		infra_skeleton.start_consuming()
+	except KeyboardInterrupt:
+	    log.info("Received interrupt - exiting.")
 class ProcessManager(object):
-    def __init__(self, ip_config):
+    def __init__(self, ip_config, skel_config):
 	self.ip_config = ip_config
+	self.skel_config = skel_config
 	self.process_table = dict()
     def add(self, infra_id):
 	if infra_id in self.process_table:
 	    raise InfrastructureIDTakenException("Unable to add infrastructure - ID already in use")
 	else: 
-	    infra_process = ProcessWrapper(self.ip_config)
+	    infra_process = ProcessWrapper(self.ip_config, self. skel_config)
 	    p = Process(target=infra_process, args=())
 	    self.process_table[infra_id] = p
 	    p.start()

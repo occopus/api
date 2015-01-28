@@ -7,6 +7,12 @@
 from multiprocessing import Process
 import os
 
+class InfrastructureIDException(Exception):
+    def __init__(self, msg = ""):
+	self.msg = msg
+    def __str__(self):
+	return repr(self.value)
+
 class ProcessWrapper(object):
     def __init__(self, ip_config):
 	self.ip_config = ip_config
@@ -14,23 +20,28 @@ class ProcessWrapper(object):
         pass
 
 class ProcessManager(object):
-##TODO: implement Exception handling
     def __init__(self, ip_config):
 	self.ip_config = ip_config
 	self.process_table = dict()
     def add(self, infra_id):
-	infra_process = ProcessWrapper(self.ip_config)
-	p = Process(target=infra_process, args=())
-	self.process_table[infra_id] = p
-	p.start()
+	if infra_id in self.process_table:
+	    raise InfrastructureIDException("Unable to add infrastructure - ID already in use")
+	else: 
+	    infra_process = ProcessWrapper(self.ip_config)
+	    p = Process(target=infra_process, args=())
+	    self.process_table[infra_id] = p
+	    p.start()
     def remove(self, infra_id):
-    ##TODO: do not send SIGKILL if process is already terminated
-	p = self.process_table[infra_id]
-	process_id = p.pid
-	os.signal(SIGINT, process_id)
-	p.join(60)
-	os.signal(SIGKILL, process_id)
-	del self.process_table[infra_id]
+	if infra_id in self.process_table:
+	    p = self.process_table[infra_id]
+	    process_id = p.pid
+	    os.signal(SIGINT, process_id)
+	    p.join(60)
+	    if p.is_alive():
+		os.signal(SIGKILL, process_id)
+	    del self.process_table[infra_id]
+	else:
+	    raise InfrastructureIDException("Error removing process - no such ID")
     def get(self, infra_id):
 	return self.process_table[infra_id]
     def abort(self, infra_id):

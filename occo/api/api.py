@@ -7,6 +7,7 @@
 from multiprocessing import Process
 import os
 import occo.infrastructure-processor as ip
+import occo.infobroker as ib
 
 class InfrastructureIDTakenException(Exception):
     def __init__(self):
@@ -29,10 +30,12 @@ class ProcessWrapper(object):
 	except KeyboardInterrupt:
 	    log.info("Received interrupt - exiting.")
 class ProcessManager(object):
-    def __init__(self, ip_config, skel_config):
+    def __init__(self, ip_config, infobroker, user_data_store, skel_config):
 	self.ip_config = ip_config
 	self.skel_config = skel_config
 	self.process_table = dict()
+	self.infobroker = infobroker
+	self. user_data_store = user_data_store
     def add(self, infra_id):
 	if infra_id in self.process_table:
 	    raise InfrastructureIDTakenException()
@@ -57,4 +60,12 @@ class ProcessManager(object):
     def abort(self, infra_id):
 	pass
     def wait_abort(self, infra_id):
-	pass
+	while not is_aborted(infra_id):
+	    pass
+    def is_aborted(self, infra_id):
+	if infra_id not in self.process_table:
+	    raise InfrastructureIDNotFoundException()
+	if not infobroker.get('infrastructure.static_description', infra_id).aborting:
+	    return None
+	instances = infobroker.get('infrastructure.state', infra_id)
+	return not sum(len(i) for i in instances.itervalues())

@@ -48,4 +48,11 @@ def init():
     log = logging.getLogger('occo')
     log.info('Staring up; PID = %d', os.getpid())
 
+    #
+    ## Bootstrap infastructure
+    #
+    infra = cfg.configuration['infrastructure']
+    infra['infobroker'].sub_providers = infra['sub_providers']
+
+
     return cfg

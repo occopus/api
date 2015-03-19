@@ -1,0 +1,4 @@
+init_dict:
+    'service_composer:chef1':
+        context_template: !text_import
+            url: file://context_template.txt

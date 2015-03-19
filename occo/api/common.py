@@ -33,7 +33,7 @@ def init():
         cfg.cfg_path = util.path_coalesce(*possible_locations)
 
     with open(cfg.cfg_path) as f:
-        data = yaml.load(f)
+        cfg.configuration = yaml.load(f)
 
     #
     ## Setup logging
@@ -41,7 +41,7 @@ def init():
     import os
     import logging
     import logging.config
-    logging.config.dictConfig(data['logging'])
+    logging.config.dictConfig(cfg.configuration['logging'])
 
     log = logging.getLogger('occo')
     log.info('Staring up; PID = %d', os.getpid())

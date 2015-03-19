@@ -10,6 +10,7 @@ Author: adam.visegradi@sztaki.mta.hu
 """
 
 import occo.api.common as common
+import yaml
 import logging
 cfg = common.init()
 log = logging.getLogger('occo')
@@ -20,5 +21,5 @@ log = logging.getLogger('occo')
 with open(cfg.node_def) as f:
     node_definition = yaml.load(f)
 
-log.debug('Configuration:\n%r', data)
+log.debug('Configuration:\n%r', cfg.configuration)
 log.debug('Node definition:\n%r', node_definition)

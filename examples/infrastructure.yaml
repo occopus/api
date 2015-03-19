@@ -13,6 +13,10 @@ occo_infrastructure:
             application: occo-infraprocessor
             module: nodestart
             timeout: 600
+    infobroker: !InfoRouter &ib
+        sub_providers:
+            - !CloudInfoProvider
+                info_broker: *ib
     uds:
         protocol: dict
         init_dict:

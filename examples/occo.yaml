@@ -1,0 +1,5 @@
+logging: !yaml_import
+    url: file://logging.yaml
+infrastructure: !yaml_import
+    url: file://infrastructure.yaml
+

@@ -9,15 +9,19 @@ OCCO-InfraProcessor.
 Author: adam.visegradi@sztaki.mta.hu
 """
 
-import occo.api.common as common
-import yaml
+import occo.util.config as config
+
+def setup_args(cfg):
+    cfg.add_argument('node_def')
+cfg = config.config(setup_args=setup_args)
+
 import logging
-cfg = common.init()
 log = logging.getLogger('occo')
 
 #
 ## Load node definition
 #
+import yaml
 with open(cfg.node_def) as f:
     node_definition = yaml.load(f)
 

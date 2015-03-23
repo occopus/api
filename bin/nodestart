@@ -23,3 +23,6 @@ with open(cfg.node_def) as f:
 
 log.debug('Configuration:\n%r', cfg.configuration)
 log.debug('Node definition:\n%r', node_definition)
+
+import occo.infobroker
+print occo.infobroker.main_info_broker

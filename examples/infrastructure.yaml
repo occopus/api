@@ -12,7 +12,7 @@ cloud_handler: !CloudHandler &ch
         application: occo-infraprocessor
         module: nodestart
         timeout: 600
-uds: &uds
+uds: !UDS &uds
     protocol: dict
     init_dict: !yaml_import
         url: file://uds_init_data.yaml

@@ -12,6 +12,7 @@ import occo.util.config as config
 import occo.util as util
 import occo.infobroker
 import occo.infobroker.cloud_provider
+import occo.infobroker.uds
 import occo.cloudhandler
 import occo.cloudhandler.backends.boto
 import occo.infraprocessor

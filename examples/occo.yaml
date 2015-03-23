@@ -1,3 +1,10 @@
+autoimport: !python_import
+    - occo.infobroker
+    - occo.infobroker.cloud_provider
+    - occo.infobroker.uds
+    - occo.cloudhandler
+    - occo.cloudhandler.backends.boto
+    - occo.infraprocessor
 logging: !yaml_import
     url: file://logging.yaml
 infrastructure: !yaml_import

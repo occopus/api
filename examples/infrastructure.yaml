@@ -16,13 +16,13 @@ uds: !UDS &uds
     protocol: dict
     init_dict: !yaml_import
         url: file://uds_init_data.yaml
-servicecomposer: !ServiceComposer
+servicecomposer: !ServiceComposer &sc
     protocol: dummy
 infraprocessor: !InfraProcessor
     protocol: basic
-    user_data_store: &uds
-    cloudhandler: &ch
-    servicecomposer: &sc
+    user_data_store: *uds
+    cloudhandler: *ch
+    servicecomposer: *sc
 
 infobroker: !InfoRouter
     main_info_broker: true

@@ -19,5 +19,6 @@ setuptools.setup(
                       'OCCO-InfoBroker',
                       'OCCO-Compiler',
                       'OCCO-Enactor',
-                      'OCCO-InfraProcessor',]
+                      'OCCO-InfraProcessor',
+                      'OCCO-ServiceComposer',]
 )

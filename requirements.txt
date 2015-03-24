@@ -7,3 +7,4 @@ OCCO-Compiler==0.1.0
 OCCO-Enactor==0.1.0
 OCCO-InfraProcessor==0.1.0
 OCCO-CloudHandler==0.1.0
+OCCO-ServiceComposer==0.1.0

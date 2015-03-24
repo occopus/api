@@ -33,3 +33,6 @@ log.debug('Node definition:\n%r', node_definition)
 ip = cfg.configuration['infrastructure']['infraprocessor']
 create_node_command = ip.cri_create_node(node_definition)
 log.info('CreateNode:\n%s', yaml.dump(create_node_command, default_flow_style=False))
+
+retval = ip.push_instructions(create_node_command)
+log.info('%r', retval)

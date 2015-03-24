@@ -5,6 +5,7 @@ autoimport: !python_import
     - occo.cloudhandler
     - occo.cloudhandler.backends.boto
     - occo.infraprocessor
+    - occo.servicecomposer
 logging: !yaml_import
     url: file://logging.yaml
 infrastructure: !yaml_import

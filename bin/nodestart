@@ -16,7 +16,9 @@ def setup_args(cfg):
 cfg = config.config(setup_args=setup_args)
 
 import logging
+import os
 log = logging.getLogger('occo')
+log.info('Starting up; PID = %d', os.getpid())
 
 #
 ## Load node definition

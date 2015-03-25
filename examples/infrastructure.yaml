@@ -29,5 +29,5 @@ infobroker: !InfoRouter
     sub_providers:
         - !CloudInfoProvider
             cloud_handler: *ch
-            service_composer: null
+            service_composer: *sc
         - *uds

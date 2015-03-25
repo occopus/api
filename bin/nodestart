@@ -36,3 +36,5 @@ log.info('CreateNode:\n%s', yaml.dump(create_node_command, default_flow_style=Fa
 
 retval = ip.push_instructions(create_node_command)
 log.info('%r', retval)
+# Final result: instance_data
+print yaml.dump(retval[0], default_flow_style=False)

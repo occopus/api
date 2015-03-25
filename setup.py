@@ -10,7 +10,7 @@ setuptools.setup(
     author_email='adam.visegradi@sztaki.mta.hu',
     namespace_packages=['occo'],
     packages=['occo.api'],
-    scripts=[],
+    scripts=['bin/nodestart'],
     url='http://www.lpds.sztaki.hu/',
     license='LICENSE.txt',
     description='OCCO API',
@@ -20,5 +20,5 @@ setuptools.setup(
                       'OCCO-Compiler',
                       'OCCO-Enactor',
                       'OCCO-InfraProcessor',
-                      'OCCO-ServiceComposer'],
+                      'OCCO-ServiceComposer',]
 )

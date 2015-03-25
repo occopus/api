@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+This script starts a single node using OCCO-CloudHandler and
+OCCO-InfraProcessor.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.util.config as config
+
+def setup_args(cfg):
+    cfg.add_argument('node_def')
+cfg = config.config(setup_args=setup_args)
+
+import logging
+import os
+log = logging.getLogger('occo')
+log.info('Starting up; PID = %d', os.getpid())
+
+#
+## Load node definition
+#
+import yaml
+with open(cfg.node_def) as f:
+    node_definition = yaml.load(f)
+
+log.debug('Configuration:\n%r', cfg.configuration)
+log.debug('Node definition:\n%r', node_definition)
+
+ip = cfg.configuration['infrastructure']['infraprocessor']
+create_node_command = ip.cri_create_node(node_definition)
+log.info('CreateNode:\n%s', yaml.dump(create_node_command, default_flow_style=False))
+
+retval = ip.push_instructions(create_node_command)
+log.info('%r', retval)
+# Final result: instance_data
+print yaml.dump(retval[0], default_flow_style=False)

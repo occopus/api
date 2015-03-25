@@ -1,6 +1,4 @@
-implementation_type: chef+cloudinit
-backend_id: dummy1
-service_composer_id: chef1
-image_id: ami-00000724
-instance_type: m1.medium
-run_list: ''
+name: server
+type: ocdemo_guse
+scaling:
+    min: 1

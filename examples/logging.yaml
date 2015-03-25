@@ -16,6 +16,7 @@ handlers:
     file:
         class : logging.FileHandler
         formatter: simpleFormater
+        mode: w
         level: DEBUG
         filename: rabbit.log
 

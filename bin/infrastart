@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+This script starts an infrastructure using OCCO.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.util.config as config
+
+def setup_args(cfg):
+    cfg.add_argument('infra_def')
+cfg = config.config(setup_args=setup_args)
+
+import logging
+import os
+log = logging.getLogger('occo')
+log.info('Starting up; PID = %d', os.getpid())
+
+log.debug('Configuration:\n%r', cfg.configuration)
+
+#
+## Load infrastructure description
+#
+import yaml
+with open(cfg.infra_def) as f:
+    infra_description = yaml.load(f)
+log.debug('Infrastructure description:\n%r', infra_description)
+
+from occo.compiler import StaticDescription
+from occo.enactor import Enactor
+from occo.infobroker import main_info_broker
+
+occo_infrastructure = cfg.configuration['infrastructure']
+uds = occo_infrastructure['uds']
+
+compiled_infrastructure = StaticDescription(infra_description)
+uds.add_infrastructure(compiled_infrastructure)
+
+infraprocessor = occo_infrastructure['infraprocessor']
+enactor = Enactor(compiled_infrastructure.infra_id,
+                  main_info_broker,
+                  infraprocessor)
+
+enactor.make_a_pass()

@@ -8,34 +8,30 @@ This script starts an infrastructure using OCCO.
 Author: adam.visegradi@sztaki.mta.hu
 """
 
-import occo.util.config as config
+import occo.api.occoapp as occoapp
 
 def setup_args(cfg):
-    cfg.add_argument('infra_def')
-cfg = config.config(setup_args=setup_args)
+    cfg.add_argument('infra_def', occoapp.yaml_file)
+occoapp.setup(setup_args)
 
 import logging
-import os
 log = logging.getLogger('occo')
-log.info('Starting up; PID = %d', os.getpid())
-
-log.debug('Configuration:\n%r', cfg.configuration)
 
 #
 ## Load infrastructure description
 #
-import yaml
-with open(cfg.infra_def) as f:
-    infra_description = yaml.load(f)
+infra_description = occoapp.args.infra_def
 log.debug('Infrastructure description:\n%r', infra_description)
 
 from occo.compiler import StaticDescription
 from occo.enactor import Enactor
+# TODO: The following is only needed until the Enactor has been updated to use
+#       the main_info_broker instance.
 from occo.infobroker import main_info_broker
 
-occo_infrastructure = cfg.configuration['infrastructure']
-uds = occo_infrastructure['uds']
+occo_infrastructure = occoapp.infrastructure
 
+uds = occo_infrastructure['uds']
 compiled_infrastructure = StaticDescription(infra_description)
 uds.add_infrastructure(compiled_infrastructure)
 

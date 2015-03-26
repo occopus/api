@@ -2,9 +2,9 @@
 # Copyright (C) 2015 MTA SZTAKI
 #
 """
-Common functions of an OCCO app.
+Common functions of a generic OCCO app.
 
-Author: adam.visegradi@sztaki.mta.hu
+Author: Adam Visegradi <adam.visegradi@sztaki.mta.hu>
 """
 
 args = None
@@ -36,4 +36,3 @@ def yaml_file(filepath):
     import yaml
     with open(filepath) as f:
         return yaml.load(f)
-

@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+This script starts an infrastructure using OCCO.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.api.occoapp as occoapp
+
+def setup_args(cfg):
+    cfg.add_argument('infra_def', type=occoapp.yaml_file)
+occoapp.setup(setup_args)
+
+import logging
+log = logging.getLogger('occo')
+
+infra_description = occoapp.args.infra_def
+log.debug('Infrastructure description:\n%r', infra_description)
+
+def submit_infrastructure(infra_description):
+    from occo.compiler import StaticDescription
+    from occo.enactor import Enactor
+    from occo.infraprocessor import InfraProcessor
+    # This will not be needed when the Enactor starts using the main_info_broker
+    from occo.infobroker import main_info_broker
+
+    uds = occoapp.uds
+    compiled_infrastructure = StaticDescription(infra_description)
+    uds.add_infrastructure(compiled_infrastructure)
+
+    infraprocessor = InfraProcessor(protocol='basic',
+                                    user_data_store=uds,
+                                    cloudhandler=occoapp.cloudhandler,
+                                    servicecomposer=occoapp.servicecomposer)
+    enactor = Enactor(compiled_infrastructure.infra_id,
+                      main_info_broker,
+                      infraprocessor)
+    return compiled_infrastructure.infra_id, infraprocessor, enactor
+
+infraid, ip, enactor = submit_infrastructure(infra_description)
+
+log.info('Submitted infrastructure: %r', infraid)
+
+enactor.make_a_pass()
+
+import yaml
+from occo.infobroker import main_info_broker
+log.info('Submitted infrastructure dynamic state:\n%s',
+         yaml.dump(main_info_broker.get('infrastructure.state',
+                                        infraid),
+                   default_flow_style=False))

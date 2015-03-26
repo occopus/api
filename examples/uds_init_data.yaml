@@ -6,7 +6,7 @@
         implementation_type: chef+cloudinit
         backend_id: dummy1
         service_composer_id: chef1
-        image_id: ami-00000724
+        image_id: ami-00001308
         instance_type: m1.medium
         run_list: ''
 'node_def:ocdemo_boinc_client':
@@ -14,6 +14,6 @@
         implementation_type: chef+cloudinit
         backend_id: dummy1
         service_composer_id: chef1
-        image_id: ami-00000722
+        image_id: ami-00001305
         instance_type: m1.medium
         run_list: ''

@@ -9,28 +9,26 @@ OCCO-InfraProcessor.
 Author: adam.visegradi@sztaki.mta.hu
 """
 
-import occo.util.config as config
+import occo.api.occoapp as occoapp
+import yaml
 
 def setup_args(cfg):
-    cfg.add_argument('node_def')
-cfg = config.config(setup_args=setup_args)
+    cfg.add_argument('node_def', type=occoapp.yaml_file)
+
+occoapp.setup(setup_args)
 
 import logging
-import os
 log = logging.getLogger('occo')
-log.info('Starting up; PID = %d', os.getpid())
 
 #
 ## Load node definition
 #
-import yaml
-with open(cfg.node_def) as f:
-    node_definition = yaml.load(f)
+node_definition = occoapp.args.node_def
 
-log.debug('Configuration:\n%r', cfg.configuration)
+log.debug('Configuration:\n%r', occoapp.configuration)
 log.debug('Node definition:\n%r', node_definition)
 
-ip = cfg.configuration['infrastructure']['infraprocessor']
+ip = occoapp.infrastructure['infraprocessor']
 create_node_command = ip.cri_create_node(node_definition)
 log.info('CreateNode:\n%s', yaml.dump(create_node_command, default_flow_style=False))
 

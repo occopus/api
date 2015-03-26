@@ -20,14 +20,14 @@ log = logging.getLogger('occo')
 infra_description = occoapp.args.infra_def
 log.debug('Infrastructure description:\n%r', infra_description)
 
-from occo.compiler import StaticDescription
-from occo.enactor import Enactor
-from occo.infraprocessor import InfraProcessor
-from occo.infobroker import main_info_broker
-
-uds = occoapp.uds
-
 def submit_infrastructure(infra_description):
+    from occo.compiler import StaticDescription
+    from occo.enactor import Enactor
+    from occo.infraprocessor import InfraProcessor
+    # This will not be needed when the Enactor starts using the main_info_broker
+    from occo.infobroker import main_info_broker
+
+    uds = occoapp.uds
     compiled_infrastructure = StaticDescription(infra_description)
     uds.add_infrastructure(compiled_infrastructure)
 
@@ -47,6 +47,7 @@ log.info('Submitted infrastructure: %r', infraid)
 enactor.make_a_pass()
 
 import yaml
+from occo.infobroker import main_info_broker
 log.info('Submitted infrastructure dynamic state:\n%s',
          yaml.dump(main_info_broker.get('infrastructure.state',
                                         infraid),

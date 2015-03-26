@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+This script stops a single node using OCCO-CloudHandler and
+OCCO-InfraProcessor.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.api.occoapp as occoapp
+import yaml
+
+def setup_args(cfg):
+    cfg.add_argument('dynamic_state', type=occoapp.yaml_file)
+
+occoapp.setup(setup_args)
+
+import logging
+log = logging.getLogger('occo')
+
+dynamic_state = occoapp.args.dynamic_state
+
+log.debug('Configuration:\n%r', occoapp.configuration)
+log.info('Infrastructure:\n%r', dynamic_state)
+
+from occo.infraprocessor import InfraProcessor
+ip = InfraProcessor(protocol='basic',
+                    user_data_store=occoapp.uds,
+                    cloudhandler=occoapp.cloudhandler,
+                    servicecomposer=occoapp.servicecomposer)
+
+from occo.util import flatten
+nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
+
+drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
+log.debug('DropNode:\n%s',
+          yaml.dump(drop_node_commands, default_flow_style=False))
+
+ip.push_instructions(drop_node_commands)

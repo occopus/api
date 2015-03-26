@@ -13,6 +13,7 @@ setuptools.setup(
     scripts=['bin/nodestart', 'bin/infrastart',
              'bin/nodestop', 'bin/infrastop',
              'bin/ibclient',
+             'bin/runinfra'
              ],
     url='http://www.lpds.sztaki.hu/',
     license='LICENSE.txt',

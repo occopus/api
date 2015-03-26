@@ -45,3 +45,20 @@ def yaml_file(filepath):
     else:
         with open(filepath) as f:
             return yaml.load(f)
+
+def killall(infra_id, ip):
+    import logging
+    log = logging.getLogger('occo')
+
+    from occo.infobroker import main_info_broker
+    dynamic_state = main_info_broker.get('infrastructure.state', infra_id)
+
+    from occo.util import flatten
+    nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
+
+    import yaml
+    drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
+    log.debug('DropNode:\n%s',
+              yaml.dump(drop_node_commands, default_flow_style=False))
+
+    ip.push_instructions(drop_node_commands)

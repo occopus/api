@@ -1,6 +1,15 @@
 'service_composer:chef1':
     context_template: !text_import
         url: file://context_template.txt
+'node_def:ocdemo_boinc_server':
+    -
+        implementation_type: chef+cloudinit
+        backend_id: dummy1
+        service_composer_id: chef1
+        image_id: ami-00001312
+        instance_type: m1.medium
+        context_template: self.password+","+self.owner_address
+        run_list: ''
 'node_def:ocdemo_guse':
     -
         implementation_type: chef+cloudinit
@@ -8,6 +17,7 @@
         service_composer_id: chef1
         image_id: ami-00001308
         instance_type: m1.medium
+        context_template: self.password+','+self.boincaddress+','+self.owner_address
         run_list: ''
 'node_def:ocdemo_boinc_client':
     -
@@ -16,4 +26,5 @@
         service_composer_id: chef1
         image_id: ami-00001305
         instance_type: m1.medium
+        context_template: 'http://'+self.serveraddress+'/szdgtest,'+self.authenticator
         run_list: ''

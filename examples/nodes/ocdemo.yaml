@@ -2,9 +2,12 @@ infra_id: ocdemo_1
 user_id: 1
 name: original_ocdemo
 nodes:
+    - &G
+        name: portal
+        type: ocdemo_guse
     - &S
         name: server
-        type: ocdemo_guse
+        type: ocdemo_boinc_server
     - &C     
         name: client
         type: ocdemo_boinc_client
@@ -12,3 +15,5 @@ nodes:
                 min: 2
 dependencies:
     - [ *C, *S ]
+variables:
+    password: $(PASSWORD)

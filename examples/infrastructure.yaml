@@ -1,4 +1,4 @@
-cloud_handler: !CloudHandler &ch
+cloudhandler: !CloudHandler &ch
     protocol: boto
     name: LPDS
     dry_run: false
@@ -18,11 +18,6 @@ uds: !UDS &uds
         url: file://uds_init_data.yaml
 servicecomposer: !ServiceComposer &sc
     protocol: dummy
-infraprocessor: !InfraProcessor
-    protocol: basic
-    user_data_store: *uds
-    cloudhandler: *ch
-    servicecomposer: *sc
 
 infobroker: !InfoRouter
     main_info_broker: true

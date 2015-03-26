@@ -30,7 +30,12 @@ def setup(setup_args):
     modvars = globals()
     modvars['args'] = cfg
     modvars['configuration'] = cfg.configuration
-    modvars['infrastructure'] = cfg.configuration['infrastructure']
+    occo_infra = cfg.configuration['infrastructure']
+    modvars['infrastructure'] = occo_infra
+    modvars['uds'] = occo_infra['uds']
+    modvars['cloudhandler'] = occo_infra['cloudhandler']
+    modvars['servicecomposer'] = occo_infra['servicecomposer']
+
 
 def yaml_file(filepath):
     import yaml

@@ -20,17 +20,19 @@ occoapp.setup(setup_args)
 import logging
 log = logging.getLogger('occo')
 
-#
-## Load node definition
-#
 node_definition = occoapp.args.node_def
 
 log.debug('Configuration:\n%r', occoapp.configuration)
-log.debug('Node definition:\n%r', node_definition)
+log.info('Node definition:\n%r', node_definition)
 
-ip = occoapp.infrastructure['infraprocessor']
+from occo.infraprocessor import InfraProcessor
+ip = InfraProcessor(protocol='basic',
+                    user_data_store=occoapp.uds,
+                    cloudhandler=occoapp.cloudhandler,
+                    servicecomposer=occoapp.servicecomposer)
 create_node_command = ip.cri_create_node(node_definition)
-log.info('CreateNode:\n%s', yaml.dump(create_node_command, default_flow_style=False))
+log.debug('CreateNode:\n%s',
+          yaml.dump(create_node_command, default_flow_style=False))
 
 retval = ip.push_instructions(create_node_command)
 log.info('%r', retval)

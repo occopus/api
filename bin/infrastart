@@ -11,15 +11,12 @@ Author: adam.visegradi@sztaki.mta.hu
 import occo.api.occoapp as occoapp
 
 def setup_args(cfg):
-    cfg.add_argument('infra_def', occoapp.yaml_file)
+    cfg.add_argument('infra_def', type=occoapp.yaml_file)
 occoapp.setup(setup_args)
 
 import logging
 log = logging.getLogger('occo')
 
-#
-## Load infrastructure description
-#
 infra_description = occoapp.args.infra_def
 log.debug('Infrastructure description:\n%r', infra_description)
 

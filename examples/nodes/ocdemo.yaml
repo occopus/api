@@ -6,7 +6,7 @@ nodes:
         name: server
         type: ocdemo_guse
     - &C     
-        name: server
+        name: client
         type: ocdemo_boinc_client
         scaling:
                 min: 2

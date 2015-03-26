@@ -39,5 +39,9 @@ def setup(setup_args):
 
 def yaml_file(filepath):
     import yaml
-    with open(filepath) as f:
-        return yaml.load(f)
+    if filepath == '-':
+        import sys
+        return yaml.load(sys.stdin)
+    else:
+        with open(filepath) as f:
+            return yaml.load(f)

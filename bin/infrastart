@@ -26,21 +26,30 @@ log.debug('Infrastructure description:\n%r', infra_description)
 from occo.compiler import StaticDescription
 from occo.enactor import Enactor
 from occo.infraprocessor import InfraProcessor
-# TODO: The following is only needed until the Enactor has been updated to use
-#       the main_info_broker instance.
 from occo.infobroker import main_info_broker
 
 uds = occoapp.uds
 
-compiled_infrastructure = StaticDescription(infra_description)
-uds.add_infrastructure(compiled_infrastructure)
+def submit_infrastructure(infra_description):
+    compiled_infrastructure = StaticDescription(infra_description)
+    uds.add_infrastructure(compiled_infrastructure)
 
-infraprocessor = InfraProcessor(protocol='basic',
-                                user_data_store=uds,
-                                cloudhandler=occoapp.cloudhandler,
-                                servicecomposer=occoapp.servicecomposer)
-enactor = Enactor(compiled_infrastructure.infra_id,
-                  main_info_broker,
-                  infraprocessor)
+    infraprocessor = InfraProcessor(protocol='basic',
+                                    user_data_store=uds,
+                                    cloudhandler=occoapp.cloudhandler,
+                                    servicecomposer=occoapp.servicecomposer)
+    enactor = Enactor(compiled_infrastructure.infra_id,
+                      main_info_broker,
+                      infraprocessor)
+    return compiled_infrastructure.infra_id, infraprocessor, enactor
+
+infraid, ip, enactor = submit_infrastructure(infra_description)
+
+log.info('Submitted infrastructure: %r', infraid)
 
 enactor.make_a_pass()
+
+log.info('Submitted infrastructure dynamic state:\n%s',
+         yaml.dump(main_info_broker.get('infrastructure.state',
+                                        infraid),
+                   default_flow_style=False)

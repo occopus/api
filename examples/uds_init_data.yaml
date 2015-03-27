@@ -9,7 +9,7 @@
         image_id: ami-00001312
         instance_type: m1.medium
         context_template: |
-            {{ variables.password }},self.owner_address
+            {{ variables.password }},{{ variables.owner_address }}
         run_list: ''
 'node_def:ocdemo_guse':
     -
@@ -19,7 +19,7 @@
         image_id: ami-00001308
         instance_type: m1.medium
         context_template: |
-            {{ variables.password }},self.boincaddress,self.owner_address
+            {{ variables.password }},{{ ibget('node.attribute', 'server', 'fqdn') }},{{ variables.owner_address }}
         run_list: ''
 'node_def:ocdemo_boinc_client':
     -
@@ -29,5 +29,5 @@
         image_id: ami-00001305
         instance_type: m1.medium
         context_template: |
-            http://{self.serveraddress}/szdgtest{self.authenticator}
+            http://{{ ibget('node.attribute', 'server', 'fqdn') }}/szdgtest/4a4cbeb886378fe65d0fc5871f1a01d8
         run_list: ''

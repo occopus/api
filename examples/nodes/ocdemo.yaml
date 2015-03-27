@@ -16,4 +16,5 @@ nodes:
 dependencies:
     - [ *C, *S ]
 variables:
-    password: $(PASSWORD)
+    password: randompassword
+    owner_address: adam.visegradi@sztaki.mta.hu

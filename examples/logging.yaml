@@ -4,7 +4,7 @@ root:
     handlers: [console, file]
 formatters:
     simpleFormater:
-        format: "%(asctime)s\t%(levelname)s\t%(threadName)s\t%(message)s"
+        format: "** %(asctime)s\t%(levelname)s\t%(threadName)s\t%(message)s"
 #            datefmt: '%Y-%m-%d %H:%M:%S.%f'
 
 handlers:

@@ -8,7 +8,8 @@
         service_composer_id: chef1
         image_id: ami-00001312
         instance_type: m1.medium
-        context_template: self.password+","+self.owner_address
+        context_template: |
+            self.password+","+self.owner_address
         run_list: ''
 'node_def:ocdemo_guse':
     -
@@ -17,7 +18,8 @@
         service_composer_id: chef1
         image_id: ami-00001308
         instance_type: m1.medium
-        context_template: self.password+','+self.boincaddress+','+self.owner_address
+        context_template: |
+            self.password+','+self.boincaddress+','+self.owner_address
         run_list: ''
 'node_def:ocdemo_boinc_client':
     -
@@ -26,5 +28,6 @@
         service_composer_id: chef1
         image_id: ami-00001305
         instance_type: m1.medium
-        context_template: 'http://'+self.serveraddress+'/szdgtest,'+self.authenticator
+        context_template: |
+            'http://'+self.serveraddress+'/szdgtest,'+self.authenticator
         run_list: ''

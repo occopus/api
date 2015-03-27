@@ -16,6 +16,10 @@ uds: !UDS &uds
     protocol: redis
 servicecomposer: !ServiceComposer &sc
     protocol: chef
+    url: https://chef-dev.lpds.sztaki.hu/
+    key: !text_import
+        url: file://occo-test.pem
+    client: occo-test
 
 infobroker: !InfoRouter
     main_info_broker: true

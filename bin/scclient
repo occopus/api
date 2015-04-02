@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+This script starts an infrastructure using OCCO.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.api.occoapp as occoapp
+
+def setup_args(cfg):
+    pass
+occoapp.setup(setup_args)
+
+import logging
+log = logging.getLogger('occo')
+
+test_node_def = dict(name='testnode',
+                     environment_id='role-test')
+sc = occoapp.infrastructure['servicecomposer']
+import chef
+node = chef.Node('2752011b-41a5-419d-9bcd-585ebd66d906', api=sc.chefapi)
+nodez = chef.Node('zeta-control', api=sc.chefapi)
+
+print dict(nodez.attributes).keys()#['ipaddress']
+print nodez['fqdn']
+print nodez['ohai_time']
+
+print node['ipaddress']
+print node['ohai_time']

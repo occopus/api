@@ -10,7 +10,7 @@
         instance_type: m1.medium
         context_template: |
             {{ variables.password }},{{ variables.owner_address }}
-        run_list: ''
+        run_list: []
 'node_def:ocdemo_guse':
     -
         implementation_type: chef+cloudinit
@@ -20,7 +20,7 @@
         instance_type: m1.medium
         context_template: |
             {{ variables.password }},{{ ibget('node.attribute', 'server', 'fqdn') }},{{ variables.owner_address }}
-        run_list: ''
+        run_list: []
 'node_def:ocdemo_boinc_client':
     -
         implementation_type: chef+cloudinit
@@ -30,4 +30,4 @@
         instance_type: m1.medium
         context_template: |
             http://{{ ibget('node.attribute', 'server', 'fqdn') }}/szdgtest/4a4cbeb886378fe65d0fc5871f1a01d8
-        run_list: ''
+        run_list: []

@@ -14,7 +14,16 @@ nodes:
         scaling:
                 min: 2
 dependencies:
-    - [ *C, *S ]
+    -
+        connection: [ *C, *S ]
+        mappings:
+            -
+                attributes: [ 'fqdn', 'alma' ]
+                synch: true
+    -
+        connection: [ *G, *S ]
+        mappings:
+            - [ 'fqdn', '' ]
 variables:
     password: randompassword
     owner_address: adam.visegradi@sztaki.mta.hu

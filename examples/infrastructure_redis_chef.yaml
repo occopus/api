@@ -14,6 +14,9 @@ cloudhandler: !CloudHandler &ch
         timeout: 600
 uds: !UDS &uds
     protocol: redis
+    altdbs:
+        node_def: 1
+        infra: 10
 servicecomposer: !ServiceComposer &sc
     protocol: chef
     dry_run: true

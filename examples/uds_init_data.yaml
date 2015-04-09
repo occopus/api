@@ -9,7 +9,11 @@
         image_id: ami-00001312
         instance_type: m1.medium
         context_template: |
-            {{ variables.password }},{{ variables.owner_address }}
+            write_files:
+                -   content: {{ variables.password }},{{ variables.owner_address }}
+                    owner: root:root
+                    path: /tmp/data
+                    permissions: '0644'
         run_list: []
 'node_def:ocdemo_guse':
     -

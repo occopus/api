@@ -1,6 +1,20 @@
 'service_composer:chef1':
     context_template: !text_import
         url: file://context_template.txt
+'node_def:ocdemo_boinc_server':
+    -
+        implementation_type: chef+cloudinit
+        backend_id: dummy1
+        service_composer_id: chef1
+        image_id: ami-00001312
+        instance_type: m1.medium
+        context_template: |
+            write_files:
+                -   content: {{ variables.password }},{{ variables.owner_address }}
+                    owner: root:root
+                    path: /tmp/data
+                    permissions: '0644'
+        run_list: []
 'node_def:ocdemo_guse':
     -
         implementation_type: chef+cloudinit
@@ -8,7 +22,9 @@
         service_composer_id: chef1
         image_id: ami-00001308
         instance_type: m1.medium
-        run_list: ''
+        context_template: |
+            {{ variables.password }},{{ ibget('node.attribute', 'server', 'fqdn') }},{{ variables.owner_address }}
+        run_list: []
 'node_def:ocdemo_boinc_client':
     -
         implementation_type: chef+cloudinit
@@ -16,4 +32,6 @@
         service_composer_id: chef1
         image_id: ami-00001305
         instance_type: m1.medium
-        run_list: ''
+        context_template: |
+            http://{{ ibget('node.attribute', 'server', 'fqdn') }}/szdgtest/4a4cbeb886378fe65d0fc5871f1a01d8
+        run_list: []

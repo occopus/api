@@ -2,13 +2,32 @@ infra_id: ocdemo_1
 user_id: 1
 name: original_ocdemo
 nodes:
+    - &G
+        name: portal
+        type: ocdemo_guse
     - &S
         name: server
-        type: ocdemo_guse
+        type: ocdemo_boinc_server
     - &C     
         name: client
         type: ocdemo_boinc_client
         scaling:
                 min: 2
+        attributes:
+            something: nothing
+            wordpress:
+                mysql_password: '{{ variables.mysqlpwd }}'
 dependencies:
-    - [ *C, *S ]
+    -
+        connection: [ *C, *S ]
+        mappings:
+            -
+                attributes: [ 'ipaddress', 'wordpress.mysql_host' ]
+    -
+        connection: [ *G, *S ]
+        mappings:
+            - [ 'fqdn', '' ]
+variables:
+    password: randompassword
+    owner_address: adam.visegradi@sztaki.mta.hu
+    mysqlpwd: otherrandompassword

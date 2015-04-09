@@ -44,7 +44,11 @@ infraid, ip, enactor = submit_infrastructure(infra_description)
 
 log.info('Submitted infrastructure: %r', infraid)
 
-enactor.make_a_pass()
+try:
+    enactor.make_a_pass()
+except KeyboardInterrupt:
+    log.info('Ctrl+C - Destroying infrastructure and exiting.')
+    occoapp.killall(infraid, ip)
 
 import yaml
 from occo.infobroker import main_info_broker

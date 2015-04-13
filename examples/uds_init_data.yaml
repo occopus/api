@@ -40,10 +40,10 @@
         implementation_type: chef+cloudinit
         backend_id: dummy1
         service_composer_id: chef1
-        image_id: ami-00001204
+        image_id: ami-00001323
         instance_type: m1.medium
         context_template: !text_import
-            url: file://mysql_server_context2.yaml
+            url: file://mysql_server_context.yaml
         run_list: 
             - recipe[mysql::server]
         attributes:

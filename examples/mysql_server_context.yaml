@@ -11,7 +11,7 @@ chef:
  force_install: false
  server_url: "https://chef-dev.lpds.sztaki.hu:443"
  environment: {{environment_id}}
- node_name: {{name}}
+ node_name: {{node_id}}
  validation_name: "chef-validator"
  validation_key: |
      -----BEGIN RSA PRIVATE KEY-----

@@ -1,7 +1,7 @@
 cloudhandler: !CloudHandler &ch
     protocol: boto
     name: LPDS
-    dry_run: true
+    dry_run: false
     target:
         endpoint: http://cfe2.lpds.sztaki.hu:4567
         regionname: ROOT
@@ -19,7 +19,7 @@ uds: !UDS &uds
         infra: 10
 servicecomposer: !ServiceComposer &sc
     protocol: chef
-    dry_run: true
+    dry_run: false
     url: https://chef-dev.lpds.sztaki.hu/
     key: !text_import
         url: file://occo-test.pem

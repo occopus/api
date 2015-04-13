@@ -1,0 +1,19 @@
+infra_id: mysql_server_demo1
+user_id: 1
+name: mysql_server_demo
+nodes:
+    - &C     
+        name: mysql_server
+        type: mysql_server
+dependencies: []
+#    -
+#        connection: [ *C, *S ]
+#        mappings:
+#            -
+#                attributes: [ 'ipaddress', 'wordpress.mysql_host' ]
+#    -
+#        connection: [ *G, *S ]
+#        mappings:
+#            - [ 'fqdn', '' ]
+variables:
+    mysql_root_password: randompassword

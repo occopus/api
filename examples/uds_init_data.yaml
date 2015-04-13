@@ -35,3 +35,17 @@
         context_template: |
             http://{{ ibget('node.attribute', 'server', 'fqdn') }}/szdgtest/4a4cbeb886378fe65d0fc5871f1a01d8
         run_list: []
+'node_def:mysql_server':
+    -
+        implementation_type: chef+cloudinit
+        backend_id: dummy1
+        service_composer_id: chef1
+        image_id: ami-00001323
+        instance_type: m1.medium
+        context_template: !text_import
+            url: file://mysql_server_context.yaml
+        run_list: 
+            - recipe[mysql::server]
+        attributes:
+            mysql:
+                server_root_password: '{{ variables.mysql_root_password }}'

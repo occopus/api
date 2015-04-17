@@ -70,4 +70,3 @@
                     name: '{{ variables.mysql_database_name }}'
                     user: '{{ variables.mysql_dbuser_username }}'
                     pass: '{{ variables.mysql_dbuser_password }}'
-                    host: 'This_should_be_filled_automatically_by_recipe_connect.'

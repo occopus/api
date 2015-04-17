@@ -1,0 +1,48 @@
+#cloud-config
+
+package_upgrade: true
+
+packages:
+ - curl
+
+chef:
+ install_type: omnibus
+ omnibus_url: "https://www.opscode.com/chef/install.sh"
+ force_install: false
+ server_url: "https://chef-dev.lpds.sztaki.hu:443"
+ environment: {{environment_id}}
+ node_name: {{node_id}}
+ validation_name: "chef-validator"
+ validation_key: |
+     -----BEGIN RSA PRIVATE KEY-----
+     MIIEpAIBAAKCAQEAuWtGmgwh0Znn4bCpPGa3I+zUP7PZ0rmjkLJE2kJ6H9AfPb7E
+     VP2XagCApSfs5+pk3u4Lvy8oGSQlpsfxOCWwhGe6wEuyGTxeTPFYqQ5ZT/f+BrJC
+     YduleSCSreDrbi+DGBvD2XL1GilpigWPm95NLqD+gsVODO/JuLGKeLdEcUsKaQpY
+     jkldu30AMGNhMw+70icDxKUSDcDLTMfu4qXXmLx6r7N35F2Kjpl/z9ZA6jpZ5Ah7
+     JyB78xM28vCHc41W09InEzcI7BiVZZf5bRSG3i2SU0db6rdrd2KGi8p+vssFSu0i
+     JgW4TWrE+qgHFxGIVPi7pGaY1LQ4SYlkgrxi1wIDAQABAoIBAHpl5F9Abvqr/DQx
+     qCXlMDQY3CuJD9tZDC4yX90sUO27N0RNL9Fi7Zbd6g4cAvk884Vt4nc8K94czHYC
+     OqvzxUhCKTdTQKgD/8QO9ZXzkOWHMTs+ZS+wDNWeuPTrKr67wnAhs/FRP5cbiz2/
+     WgNshcqoIBo3IMTNbX3sRRpW8GlQHPIc/l58Fsh2LZSnd4q2uFjFiYQjIjsCGaPV
+     MgfEgCEq/7cwjYIjxUtkSXE6EqCQeVVLg5EvpULZIxu9AQRb7bCRJRMbNA8KlTe5
+     TRzhQ3BsYwbVs6MYORu++/Z7y5dm/RWNk2kTAEREYDpJSaPZuAj4jPHVnYLTPKt6
+     Rk2er1ECgYEA8FIA5bfPbHn21JcZGnBYcFtiwXLwFmAcdr0F6ClK+9BCBib+xaQD
+     EUWKlau9KnhCyW79Qalg+X3V3gopyKE6Fc2hbLJMaOnPfdoopA5AWlGnaiz0+YYa
+     K5kTbi5ezFTBwbVhOiXtz2VEbBI6pfmTMCoYZP78oryec1U/ppjpzo0CgYEAxYRF
+     6Pn9dK3LrR1ZZnQMT2hvb9aGnKfCDkBCF5hJABUmVu8Tax6m6ByuE6kc6USJzu9R
+     EaCSJ974UJWNiwMmeHe0mCCCb5E/NVTKTZsN4QJCIh5XPuVClNTB91M7eCrw6rN8
+     HOL0GfRxQlK1DT8hy+J9pePgAZJAfweVy0ODX/MCgYEA7oM0yMmJYEwcIhpkm8zs
+     uXa5qO1+Q3bYSTCJcEWrWgjzvk9thJKnSLkQNkPg1wnMn0c8q7KDwJqXbGwB1FHP
+     6FvR3qOHGokTmgCvXUOXswxfcA12hUAHMUYX9r6m730fYDW4bZG/WJtVMT1WX+w3
+     nRHqbDJ2Yr15NVZieeJCCvECgYALFPHLMYN78WhVDSl/6xDpv6VI9BNXZL4piIds
+     xXmLDKS7Cezf/LdGnJ1TsxBRMiw9NQYqZATvQb5S3yEy5HlbFvRF+MT4t4CBYIF9
+     Oy7bKgJF4cfpWnmS2iEL3Fqg0l/z+yACiuVBM4rLOtK3rIwb4VhFX3SpAeimd+l6
+     nw4W6wKBgQCVQmLSt2OfoBnei51y7hRkuBPpekS35SoTq2GXIy4NFkzJR0Bn7Ccu
+     3+rc0UBQsdr5nEaiUsKyk6HHv6StrZ8mf6+LeFJMS/TXjJF/jW+2UQLJ0kz93v+N
+     gPvOcH2v0k7fTyxKwoXr0G0/w/vRobz2vtJlfv/qbQMQCbUzMmqiGQ==
+     -----END RSA PRIVATE KEY-----
+
+runcmd:
+ - [ sh, -xc, "/usr/bin/chef-client" ]
+
+output: {all: '| tee -a /var/log/cloud-init-output.log'}

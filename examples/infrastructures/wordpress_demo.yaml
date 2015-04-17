@@ -1,0 +1,21 @@
+infra_id: wordpress_demo
+user_id: 1
+name: wordpress_demo
+nodes:
+    - &DBS_Node
+        name: mysql_server
+        type: mysql_server
+    - &WP_Node
+        name: wordpress
+        type: wordpress
+dependencies:
+    -
+        connection: [ *WP_Node, *DBS_Node ]
+        mappings:
+            -
+                attributes: [ 'fqdn', 'wordpress.mysql_host' ]
+variables:
+    mysql_root_password: Cl4P-Tp
+    mysql_database_name: wordpress
+    mysql_dbuser_username: wordpress_user
+    mysql_dbuser_password: Z3r0

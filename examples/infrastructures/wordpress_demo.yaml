@@ -1,4 +1,3 @@
-infra_id: wordpress_demo
 user_id: 1
 name: wordpress_demo
 nodes:

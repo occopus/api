@@ -7,7 +7,7 @@ packages:
 
 chef:
  install_type: omnibus
- omnibus_url: "https://www.chef.io/chef/install.sh"
+ omnibus_url: "https://www.opscode.com/chef/install.sh"
  force_install: false
  server_url: "https://c155-14.localcloud/"
  environment: {{environment_id}}

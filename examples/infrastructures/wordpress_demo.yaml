@@ -12,7 +12,7 @@ dependencies:
         connection: [ *WP_Node, *DBS_Node ]
         mappings:
             -
-                attributes: [ 'fqdn', 'wordpress.mysql_host' ]
+                attributes: [ 'fqdn', 'wordpress.db.host' ]
 variables:
     mysql_root_password: Cl4P-Tp
     mysql_database_name: wordpress

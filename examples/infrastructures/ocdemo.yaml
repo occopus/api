@@ -22,3 +22,4 @@ variables:
     password: randompassword
     owner_address: adam.visegradi@sztaki.mta.hu
     mysqlpwd: otherrandompassword
+    server_role_name: server

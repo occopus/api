@@ -23,7 +23,7 @@
         image_id: ami-00001308
         instance_type: m1.medium
         context_template: |
-            {{ variables.password }},{{ ibget('node.attribute', 'server', 'fqdn') }},{{ variables.owner_address }}
+            {{ variables.password }},{{ ibget('node.attribute', variables.server_role_name, 'fqdn') }},{{ variables.owner_address }}
         run_list: []
 'node_def:ocdemo_boinc_client':
     -
@@ -33,7 +33,7 @@
         image_id: ami-00001305
         instance_type: m1.medium
         context_template: |
-            http://{{ ibget('node.attribute', 'server', 'fqdn') }}/szdgtest/4a4cbeb886378fe65d0fc5871f1a01d8
+            http://{{ ibget('node.attribute', variables.server_role_name, 'fqdn') }}/szdgtest/4a4cbeb886378fe65d0fc5871f1a01d8
         run_list: []
 'node_def:mysql_server':
     -

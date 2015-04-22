@@ -56,3 +56,4 @@ log.info('Submitted infrastructure dynamic state:\n%s',
          yaml.dump(main_info_broker.get('infrastructure.state',
                                         infraid),
                    default_flow_style=False))
+print infraid

@@ -10,20 +10,34 @@ Author: adam.visegradi@sztaki.mta.hu
 """
 
 import occo.api.occoapp as occoapp
+import occo.infobroker as ib
 import yaml
 
 def setup_args(cfg):
-    cfg.add_argument('dynamic_state', type=occoapp.yaml_file)
+    cfg.add_argument('-d', '--dynamic_state', type=occoapp.yaml_file, default=None)
+    cfg.add_argument('-i', dest='infraid', default=None)
 
 occoapp.setup(setup_args)
+
+if not occoapp.args.infraid and not occoapp.args.dynamic_state:
+    print 'Provide either infrastructure id (-i) or the dynamic state (-d)'
+    exit(2)
 
 import logging
 log = logging.getLogger('occo')
 
-dynamic_state = occoapp.args.dynamic_state
-
 log.debug('Configuration:\n%r', occoapp.configuration)
-log.info('Infrastructure:\n%r', dynamic_state)
+
+if occoapp.args.infraid:
+    log.info('Infrastructure ID supplied (%s), '
+             'loading infrastructure state',
+             occoapp.args.infraid)
+    dynamic_state = ib.main_info_broker.get(
+        'infrastructure.state', occoapp.args.infraid)
+    log.debug('Infrastructure state:\n%s',
+              yaml.dump(dynamic_state, default_flow_style=False))
+else:
+    dynamic_state = occoapp.args.dynamic_state
 
 from occo.infraprocessor import InfraProcessor
 ip = InfraProcessor(protocol='basic',

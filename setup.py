@@ -14,6 +14,7 @@ setuptools.setup(
              'bin/nodestop', 'bin/infrastop',
              'bin/ibclient',
              'bin/listkeys',
+             'bin/listnodes',
              'bin/runinfra',
              'bin/redisload',
              ],

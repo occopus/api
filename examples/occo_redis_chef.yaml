@@ -6,6 +6,7 @@ autoimport: !python_import
     - occo.cloudhandler
     - occo.cloudhandler.backends.boto
     - occo.infraprocessor
+    - occo.infraprocessor.node_resolution.backends.chef
     - occo.servicecomposer
     - occo.servicecomposer.backends.chef
 logging: !yaml_import

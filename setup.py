@@ -13,6 +13,8 @@ setuptools.setup(
     scripts=['bin/nodestart', 'bin/infrastart',
              'bin/nodestop', 'bin/infrastop',
              'bin/ibclient',
+             'bin/listkeys',
+             'bin/listnodes',
              'bin/runinfra',
              'bin/redisload',
              ],

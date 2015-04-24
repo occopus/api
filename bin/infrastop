@@ -40,10 +40,11 @@ else:
     dynamic_state = occoapp.args.dynamic_state
 
 from occo.infraprocessor import InfraProcessor
-ip = InfraProcessor(protocol='basic',
-                    user_data_store=occoapp.uds,
-                    cloudhandler=occoapp.cloudhandler,
-                    servicecomposer=occoapp.servicecomposer)
+ip = InfraProcessor.instantiate(
+    protocol='basic',
+    user_data_store=occoapp.uds,
+    cloudhandler=occoapp.cloudhandler,
+    servicecomposer=occoapp.servicecomposer)
 
 from occo.util import flatten
 nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
@@ -53,3 +54,6 @@ log.debug('DropNode:\n%s',
           yaml.dump(drop_node_commands, default_flow_style=False))
 
 ip.push_instructions(drop_node_commands)
+
+if occoapp.args.infraid:
+    ip.push_instructions(ip.cri_drop_environment(occoapp.args.infraid))

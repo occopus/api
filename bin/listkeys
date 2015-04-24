@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+OCCO InfoBroker CLI.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.api.occoapp as occoapp
+import yaml
+import re
+
+import occo.util
+occo.util.logged.disabled = False
+
+def regex_cut(regex):
+    def cut(s):
+        match = re.search(regex, s)
+        return match.group(1) if match else s
+    return cut
+
+def setup_args(cfg):
+    cfg.add_argument('pattern')
+    cfg.add_argument('regexcut', nargs='?', default='(.*)', type=regex_cut)
+
+occoapp.setup(setup_args)
+
+uds = occoapp.infrastructure['uds']
+kvs = uds.kvstore
+print kvs.listkeys(occoapp.args.pattern, occoapp.args.regexcut)

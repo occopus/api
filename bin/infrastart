@@ -31,7 +31,8 @@ def submit_infrastructure(infra_description):
     compiled_infrastructure = StaticDescription(infra_description)
     uds.add_infrastructure(compiled_infrastructure)
 
-    infraprocessor = InfraProcessor(protocol='basic',
+    infraprocessor = InfraProcessor.instantiate(
+                                    protocol='basic',
                                     user_data_store=uds,
                                     cloudhandler=occoapp.cloudhandler,
                                     servicecomposer=occoapp.servicecomposer)

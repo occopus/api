@@ -13,21 +13,13 @@ nodes:
         type: ocdemo_boinc_client
         scaling:
                 min: 2
-        attributes:
-            something: nothing
-            wordpress:
-                mysql_password: '{{ variables.mysqlpwd }}'
 dependencies:
     -
         connection: [ *C, *S ]
-        mappings:
-            -
-                attributes: [ 'ipaddress', 'wordpress.mysql_host' ]
     -
         connection: [ *G, *S ]
-        mappings:
-            - [ 'fqdn', '' ]
 variables:
     password: randompassword
     owner_address: adam.visegradi@sztaki.mta.hu
     mysqlpwd: otherrandompassword
+    server_role_name: server

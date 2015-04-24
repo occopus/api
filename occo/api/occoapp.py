@@ -16,10 +16,10 @@ configuration = None
 infrastructure = None
 """The OCCO infrastructure defined in the configuration."""
 
-def setup(setup_args):
+def setup(setup_args=None, cfg_path=None):
     import occo.util.config as config
 
-    cfg = config.config(setup_args=setup_args)
+    cfg = config.config(setup_args=setup_args, cfg_path=cfg_path)
 
     import logging
     import os

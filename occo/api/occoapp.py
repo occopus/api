@@ -38,13 +38,7 @@ def setup(setup_args=None, cfg_path=None):
 
 
 def yaml_file(filepath):
-    import yaml
-    if filepath == '-':
-        import sys
-        return yaml.load(sys.stdin)
-    else:
-        with open(filepath) as f:
-            return yaml.load(f)
+    return util.yaml_load_file(filepath)
 
 def killall(infra_id, ip):
     import logging

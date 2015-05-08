@@ -37,20 +37,29 @@ class ProcessManager(object):
         self.process_table = dict()
         self.infobroker = main_info_broker
         self.user_data_store = user_data_store
-    def add(self, infra_id):
-        if infra_id in self.process_table:
-            raise InfrastructureIDTakenException()
-        else:
-            infra_process = ProcessWrapper(self.ip_config, self. skel_config)
-            p = Process(target=infra_process, args=())
-            self.process_table[infra_id] = p
-            p.start()
-    def remove(self, infra_id):
+    def add(self, infra_desc):
+        from occo.compiler import StaticDescription
+        from occo.api.infra_process import run_infrastructure
+        compiled_infrastructure = StaticDescription(infra_description)
+        user_data_store.add_infrastructure(compiled_infrastructure)
+        infra_id = compiled_infrastructure.infra_id
+
+        p = Process(target=run_infrastructure, args=(infra_id, 
+                                                    self.user_data_store,
+                                                    self.infobroker,
+                                                    self.cloudhandler,
+                                                    self.servicecomposer))
+        self.process_table[infra_id] = p
+        p.start()
+    def stop_provisioning(self, infra_id):
         if infra_id in self.process_table:
             p = self.process_table[infra_id]
             process_id = p.pid
             os.signal(SIGINT, process_id)
-            p.join(60)
+            try:
+                p.join(60)
+            except BaseException:
+                log.exception('')
             if p.is_alive():
                 os.signal(SIGKILL, process_id)
             del self.process_table[infra_id]
@@ -58,7 +67,7 @@ class ProcessManager(object):
             raise InfrastructureIDNotFoundException()
     def get(self, infra_id):
         return self.process_table[infra_id]
-    def abort(self, infra_id):
+    def tear_down(self, infra_id):
         pass
     def wait_abort(self, infra_id):
         while True:

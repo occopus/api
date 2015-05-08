@@ -77,4 +77,17 @@ class ProcessManager(object):
     def get(self, infra_id):
         return self.process_table[infra_id]
     def tear_down(self, infra_id):
-        pass
+        from occo.infraProcessor import InfraProcessor
+        
+        dynamic_state = self.infobroker.get('infrastructure.state', infra_id)
+        ip = InfraProcessor.instantiate(protocol = 'basic',
+                                        user_data_store = self.uds,
+                                        cloudhandler = self.cloudhandler,
+                                        servicecomposer = self.servicecomposer)
+        from occo.util import flatten
+        nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
+
+        drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
+        ip.push_instructions(drop_node_commands)
+
+        ip.push_instructions(ip.cri_drop_environment(infra_id)

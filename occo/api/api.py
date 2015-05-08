@@ -38,12 +38,20 @@ class ProcessManager(object):
         self.infobroker = main_info_broker
         self.user_data_store = user_data_store
     def add(self, infra_desc):
+        infra_id = submit_infrastructure(infra_desc)
+        start_provisioning(infra_id)
+    def submit_infrastructure(self, infra_desc):
         from occo.compiler import StaticDescription
         from occo.api.infra_process import run_infrastructure
         compiled_infrastructure = StaticDescription(infra_description)
         user_data_store.add_infrastructure(compiled_infrastructure)
         infra_id = compiled_infrastructure.infra_id
-
+        log.info("Infrastructure submitted with %r infrastructure_id", infra_id)
+        return infra_id
+    
+    def start_provisioning(self, infra_id):
+        if not infra_id in self.process_table:
+            raise InfrastructureIDNotFoundException()
         p = Process(target=run_infrastructure, args=(infra_id, 
                                                     self.user_data_store,
                                                     self.infobroker,
@@ -51,6 +59,7 @@ class ProcessManager(object):
                                                     self.servicecomposer))
         self.process_table[infra_id] = p
         p.start()
+
     def stop_provisioning(self, infra_id):
         if infra_id in self.process_table:
             p = self.process_table[infra_id]
@@ -69,17 +78,3 @@ class ProcessManager(object):
         return self.process_table[infra_id]
     def tear_down(self, infra_id):
         pass
-    def wait_abort(self, infra_id):
-        while True:
-            flag = is_aborted(infra_id)
-            if flag is None:
-                raise RuntimeError("Invalid infrastructure abort")
-            elif flag is True:
-                break
-    def is_aborted(self, infra_id):
-        if infra_id not in self.process_table:
-            raise InfrastructureIDNotFoundException()
-        if not infobroker.get('infrastructure.static_description', infra_id).aborting:
-            return None
-        instances = infobroker.get('infrastructure.state', infra_id)
-        return not sum(len(i) for i in instances.itervalues())

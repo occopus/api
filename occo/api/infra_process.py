@@ -11,26 +11,14 @@ Author: novak.adam@sztaki.mta.hu
 import logging
 log=logging.getLogger('occo')
 
-def submit_infrastructure(infra_id, uds, info_broker, cloudhandler,
-                          servicecomposer, infra_protocol):
-
+def run_infrastructure(infra_id, uds, info_broker, cloudhandler, 
+                       servicecomposer, infra_protocol='basic'):
     from occo.enactor import Enactor
     from occo.infraprocessor import InfraProcessor
 
     infraprocessor = InfraProcessor.instantiate(infra_protocol, uds, 
                                                 cloudhandler, servicecomposer)
-    enactor = Enactor(compiled_infrastructure.infra_id, info_broker,
-                      infraprocessor)
-    return infraprocessor, enactor
-
-def run_infrastructure(infra_id, uds, info_broker, cloudhandler, 
-                       servicecomposer, infra_protocol='basic'):
-    ip, enactor = SubmitInfrastructure(infra_id, uds, info_broker,
-                                        cloudhandler, servicecomposer,
-                                                 infra_protocol)
-
-    log.info('Submitted infrastructure: %r', infra_id)
-
+    enactor = Enactor(infra_id, info_broker, infraprocessor)
     try:
         while True:
             enactor.make_a_pass()

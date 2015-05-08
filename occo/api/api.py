@@ -30,12 +30,13 @@ class ProcessWrapper(object):
         except KeyboardInterrupt:
             log.info("Received interrupt - exiting.")
 class ProcessManager(object):
-    def __init__(self, ip_config, infobroker, user_data_store, skel_config):
+    def __init__(self, ip_config, user_data_store, skel_config):
+        from occo.infobroker import main_info_broker
         self.ip_config = ip_config
         self.skel_config = skel_config
         self.process_table = dict()
-        self.infobroker = infobroker
-        self. user_data_store = user_data_store
+        self.infobroker = main_info_broker
+        self.user_data_store = user_data_store
     def add(self, infra_id):
         if infra_id in self.process_table:
             raise InfrastructureIDTakenException()

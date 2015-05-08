@@ -10,9 +10,7 @@ cfg.parse_args()
 import occo.infobroker.kvstore
 import occo.infobroker.rediskvstore
 import yaml
-util.set_config_base_dir(cfg.redis_data, use_dir=True)
-with open(cfg.redis_data) as f:
-    redis_data = yaml.load(f)
+redis_data = util.yaml_load_file(cfg.redis_data)
 
 kvs = redis_data['kvs']
 data = redis_data['init_data']

@@ -16,10 +16,10 @@ configuration = None
 infrastructure = None
 """The OCCO infrastructure defined in the configuration."""
 
-def setup(setup_args):
+def setup(setup_args=None, cfg_path=None):
     import occo.util.config as config
 
-    cfg = config.config(setup_args=setup_args)
+    cfg = config.config(setup_args=setup_args, cfg_path=cfg_path)
 
     import logging
     import os
@@ -38,13 +38,7 @@ def setup(setup_args):
 
 
 def yaml_file(filepath):
-    import yaml
-    if filepath == '-':
-        import sys
-        return yaml.load(sys.stdin)
-    else:
-        with open(filepath) as f:
-            return yaml.load(f)
+    return util.yaml_load_file(filepath)
 
 def killall(infra_id, ip):
     import logging

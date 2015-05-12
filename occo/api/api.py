@@ -4,87 +4,82 @@
 # Configuration primitives for the SZTAKI Cloud Orchestrator
 #
 
-from multiprocessing import Process
-import os
+import time, os
+from occo.util.parproc import GracefulProcess
 import occo.infraprocessor as ip
 import occo.infobroker as ib
 
-class InfrastructureIDTakenException(Exception):
-    def __init__(self):
-        pass
+class InfrastructureIDTakenException(Exception): pass
+class InfrastructureIDNotFoundException(Exception): pass
 
-class InfrastructureIDNotFoundException(Exception):
-    def __init__(self):
-        pass
+class InfrastructureMaintenanceProcess(GracefulProcess):
 
-class ProcessWrapper(object):
-    def __init__(self, ip_config, skel_config):
-        self.ip_config = ip_config
-        self.skel_config = skel_config
+    def __init__(self, infra_id, ip_config, enactor_interval=10):
+        self.infra_id,  self.ip_config = infra_id, ip_config
+        self.enactor_interval = enactor_interval
+
     def __call__(self):
+        from occo.enactor import Enactor
+        from occo.infraprocessor import InfraProcessor
+
+        infraprocessor = InfraProcessor.instantiate(**self.ip_config)
+        enactor = Enactor(infra_id, info_broker, infraprocessor)
         try:
-            infra_processor = ip.InfraProcessor(**self.ip_config)
-            infra_skeleton = ip.RemoteInfraProcessorSkeleton(backend_ip = infra_processor, **self.skel_config)
             while True:
-                infra_skeleton.start_consuming()
+                enactor.make_a_pass()
+                time.sleep(self.enactor_interval)
         except KeyboardInterrupt:
-            log.info("Received interrupt - exiting.")
+            log.info('Ctrl+C - exiting.')
+            infraprocessor.cancel_pending()
+        except:
+            log.exception('Unexpected error:')
+            exit(1)
+
 class ProcessManager(object):
-    def __init__(self, ip_config, user_data_store, skel_config):
+    def __init__(self, user_data_store, ip_config):
         from occo.infobroker import main_info_broker
-        self.ip_config = ip_config
-        self.skel_config = skel_config
+        self.ip_config, self.user_data_store = ip_config, user_data_store
         self.process_table = dict()
-        self.infobroker = main_info_broker
-        self.user_data_store = user_data_store
+
     def add(self, infra_desc):
-        infra_id = submit_infrastructure(infra_desc)
-        start_provisioning(infra_id)
+        infra_id = self.submit_infrastructure(infra_desc)
+        self.start_provisioning(infra_id)
+
     def submit_infrastructure(self, infra_desc):
         from occo.compiler import StaticDescription
-        from occo.api.infra_process import run_infrastructure
+
         compiled_infrastructure = StaticDescription(infra_description)
-        user_data_store.add_infrastructure(compiled_infrastructure)
+        self.user_data_store.add_infrastructure(compiled_infrastructure)
         infra_id = compiled_infrastructure.infra_id
-        log.info("Infrastructure submitted with %r infrastructure_id", infra_id)
+        log.info("Submitted infrastructure: %r", infra_id)
         return infra_id
     
     def start_provisioning(self, infra_id):
-        if not infra_id in self.process_table:
-            raise InfrastructureIDNotFoundException()
-        p = Process(target=run_infrastructure, args=(infra_id, 
-                                                    self.user_data_store,
-                                                    self.infobroker,
-                                                    self.cloudhandler,
-                                                    self.servicecomposer))
+        if infra_id in self.process_table:
+            raise InfrastructureIDTakenException(infra_id)
+
+        from occo.api.infra_process import run_infrastructure
+        p = InfrastructureMaintenanceProcess(
+                infra_id, self.user_data_store, self.ip_config)
         self.process_table[infra_id] = p
         p.start()
 
-    def stop_provisioning(self, infra_id):
-        if infra_id in self.process_table:
-            p = self.process_table[infra_id]
-            process_id = p.pid
-            os.signal(SIGINT, process_id)
-            try:
-                p.join(60)
-            except BaseException:
-                log.exception('')
-            if p.is_alive():
-                os.signal(SIGKILL, process_id)
-            del self.process_table[infra_id]
-        else:
+    def stop_provisioning(self, infra_id, wait_timeout=60):
+        try:
+            p = self.process_table.pop(infra_id)
+            p.graceful_terminate(wait_timeout)
+        except KeyError:
             raise InfrastructureIDNotFoundException()
+
     def get(self, infra_id):
         return self.process_table[infra_id]
+
     def tear_down(self, infra_id):
         from occo.infraProcessor import InfraProcessor
-        
-        dynamic_state = self.infobroker.get('infrastructure.state', infra_id)
-        ip = InfraProcessor.instantiate(protocol = 'basic',
-                                        user_data_store = self.uds,
-                                        cloudhandler = self.cloudhandler,
-                                        servicecomposer = self.servicecomposer)
         from occo.util import flatten
+
+        dynamic_state = main_info_broker.get('infrastructure.state', infra_id)
+        ip = InfraProcessor.instantiate(**self.ip_config)
         nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
 
         drop_node_commands = [ip.cri_drop_node(n) for n in nodes]

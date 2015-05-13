@@ -1,8 +1,12 @@
 #
 # Copyright (C) 2014 MTA SZTAKI
 #
-# Configuration primitives for the SZTAKI Cloud Orchestrator
+# OCCO Infrastructure Manager
 #
+
+__all__ = ['InfrastructureIDTakenException',
+           'InfrastructureIDNotFoundException',
+           'ProcessManager']
 
 import time, os
 from occo.util.parproc import GracefulProcess

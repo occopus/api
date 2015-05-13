@@ -15,7 +15,6 @@ setuptools.setup(
              'bin/ibclient',
              'bin/listkeys',
              'bin/listnodes',
-             'bin/runinfra',
              'bin/redisload',
              'bin/manager_service',
              ],

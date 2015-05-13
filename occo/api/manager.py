@@ -6,7 +6,7 @@
 
 __all__ = ['InfrastructureIDTakenException',
            'InfrastructureIDNotFoundException',
-           'ProcessManager']
+           'InfrastructureManager']
 
 import time, os
 from occo.util.parproc import GracefulProcess
@@ -39,7 +39,7 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
             log.exception('Unexpected error:')
             exit(1)
 
-class ProcessManager(object):
+class InfrastructureManager(object):
     def __init__(self, user_data_store, ip_config):
         from occo.infobroker import main_info_broker
         self.ip_config, self.user_data_store = ip_config, user_data_store

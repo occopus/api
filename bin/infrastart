@@ -12,13 +12,6 @@ import occo.api.occoapp as occoapp
 
 def setup_args(cfg):
     cfg.add_argument('infra_def', type=occoapp.yaml_file)
-occoapp.setup(setup_args)
-
-import logging
-log = logging.getLogger('occo')
-
-infra_description = occoapp.args.infra_def
-log.debug('Infrastructure description:\n%r', infra_description)
 
 def submit_infrastructure(infra_description):
     from occo.compiler import StaticDescription
@@ -41,20 +34,29 @@ def submit_infrastructure(infra_description):
                       infraprocessor)
     return compiled_infrastructure.infra_id, infraprocessor, enactor
 
-infraid, ip, enactor = submit_infrastructure(infra_description)
+if __name__ == '__main__':
+    occoapp.setup(setup_args)
 
-log.info('Submitted infrastructure: %r', infraid)
+    import logging
+    log = logging.getLogger('occo')
 
-try:
-    enactor.make_a_pass()
-except KeyboardInterrupt:
-    log.info('Ctrl+C - Destroying infrastructure and exiting.')
-    occoapp.killall(infraid, ip)
+    infra_description = occoapp.args.infra_def
+    log.debug('Infrastructure description:\n%r', infra_description)
 
-import yaml
-from occo.infobroker import main_info_broker
-log.info('Submitted infrastructure dynamic state:\n%s',
-         yaml.dump(main_info_broker.get('infrastructure.state',
-                                        infraid),
-                   default_flow_style=False))
-print infraid
+    infraid, ip, enactor = submit_infrastructure(infra_description)
+
+    log.info('Submitted infrastructure: %r', infraid)
+
+    try:
+        enactor.make_a_pass()
+    except KeyboardInterrupt:
+        log.info('Ctrl+C - Destroying infrastructure and exiting.')
+        occoapp.killall(infraid, ip)
+
+    import yaml
+    from occo.infobroker import main_info_broker
+    log.info('Submitted infrastructure dynamic state:\n%s',
+             yaml.dump(main_info_broker.get('infrastructure.state',
+                                            infraid),
+                       default_flow_style=False))
+    print infraid

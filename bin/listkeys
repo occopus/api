@@ -25,8 +25,10 @@ def setup_args(cfg):
     cfg.add_argument('pattern')
     cfg.add_argument('regexcut', nargs='?', default='(.*)', type=regex_cut)
 
-occoapp.setup(setup_args)
+if __name__ == '__main__':
 
-uds = occoapp.infrastructure['uds']
-kvs = uds.kvstore
-print kvs.listkeys(occoapp.args.pattern, occoapp.args.regexcut)
+    occoapp.setup(setup_args)
+
+    uds = occoapp.infrastructure['uds']
+    kvs = uds.kvstore
+    print kvs.listkeys(occoapp.args.pattern, occoapp.args.regexcut)

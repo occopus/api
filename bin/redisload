@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
-import occo.util as util
-import occo.util.config as config
+if __name__ == '__main__':
 
-cfg = config.DefaultConfig(dict())
-cfg.add_argument('redis_data')
-cfg.parse_args()
+    import occo.util as util
+    import occo.util.config as config
 
-import occo.infobroker.kvstore
-import occo.infobroker.rediskvstore
-import yaml
-redis_data = util.yaml_load_file(cfg.redis_data)
+    cfg = config.DefaultConfig(dict())
+    cfg.add_argument('redis_data')
+    cfg.parse_args()
 
-kvs = redis_data['kvs']
-data = redis_data['init_data']
+    import occo.infobroker.kvstore
+    import occo.infobroker.rediskvstore
+    import yaml
+    redis_data = util.yaml_load_file(cfg.redis_data)
 
-for key, value in data.iteritems():
-    kvs[key] = value
+    kvs = redis_data['kvs']
+    data = redis_data['init_data']
+
+    for key, value in data.iteritems():
+        kvs[key] = value

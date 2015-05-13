@@ -19,6 +19,8 @@ import time, os
 from occo.util.parproc import GracefulProcess
 import occo.infraprocessor as ip
 import occo.infobroker as ib
+import logging
+log = logging.getLogger('occo.manager_service')
 
 class InfrastructureIDTakenException(Exception): pass
 class InfrastructureIDNotFoundException(Exception): pass

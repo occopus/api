@@ -62,7 +62,8 @@ if __name__ == '__main__':
                   request.method, infraid)
         if infraid:
             if request.method == 'DELETE':
-                manager.stop_provisioning(infraid)
+                if infraid in manager.process_table:
+                    manager.stop_provisioning(infraid)
                 manager.tear_down(infraid)
                 return jsonify(dict())
             else:

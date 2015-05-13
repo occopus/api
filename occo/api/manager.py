@@ -18,7 +18,7 @@ __all__ = ['InfrastructureIDTakenException',
 import time, os
 from occo.util.parproc import GracefulProcess
 import occo.infraprocessor as ip
-import occo.infobroker as ib
+from occo.infobroker import main_info_broker
 import logging
 log = logging.getLogger('occo.manager_service')
 
@@ -40,16 +40,18 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
     """
 
     def __init__(self, infra_id, ip_config, enactor_interval=10):
-        super(InfrastructureMaintenanceProcess, self).__init__()
+        super(InfrastructureMaintenanceProcess, self).__init__(target=self)
         self.infra_id,  self.ip_config = infra_id, ip_config
         self.enactor_interval = enactor_interval
 
     def __call__(self):
+        log.info('Starting maintenance process for %r', self.infra_id)
+
         from occo.enactor import Enactor
         from occo.infraprocessor import InfraProcessor
 
         infraprocessor = InfraProcessor.instantiate(**self.ip_config)
-        enactor = Enactor(infra_id, info_broker, infraprocessor)
+        enactor = Enactor(self.infra_id, main_info_broker, infraprocessor)
         try:
             while True:
                 enactor.make_a_pass()
@@ -75,7 +77,6 @@ class InfrastructureManager(object):
     :param ip_config: Configuration for the Infrastructure Processor instances.
     """
     def __init__(self, user_data_store, ip_config):
-        from occo.infobroker import main_info_broker
         self.ip_config, self.user_data_store = ip_config, user_data_store
         self.process_table = dict()
 
@@ -130,9 +131,9 @@ class InfrastructureManager(object):
         if infra_id in self.process_table:
             raise InfrastructureIDTakenException(infra_id)
 
-        p = InfrastructureMaintenanceProcess(
-                infra_id, self.user_data_store, self.ip_config)
+        p = InfrastructureMaintenanceProcess(infra_id, self.ip_config)
         self.process_table[infra_id] = p
+        log.info('Spawning maintenance process for %r', infra_id)
         p.start()
 
     def stop_provisioning(self, infra_id, wait_timeout=60):

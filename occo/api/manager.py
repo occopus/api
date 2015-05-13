@@ -98,7 +98,7 @@ class InfrastructureManager(object):
 
         from occo.compiler import StaticDescription
 
-        compiled_infrastructure = StaticDescription(infra_description)
+        compiled_infrastructure = StaticDescription(infra_desc)
         self.user_data_store.add_infrastructure(compiled_infrastructure)
         infra_id = compiled_infrastructure.infra_id
         log.info("Submitted infrastructure: %r", infra_id)

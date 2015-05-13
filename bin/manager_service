@@ -54,8 +54,11 @@ if __name__ == '__main__':
         response.status_code = 500
         return response
 
-    @flask.route('/infrastructures', methods=['POST'])
+    @flask.route('/infrastructures', methods=['GET', 'POST'])
     def submit_infrastructure():
+        if request.method == 'GET':
+            return jsonify(dict(infrastructures=manager.process_table.keys()))
+
         infra_desc = request.stream.read()
         log.info('Submitting infrastructure:\n%s', util.yamldump(infra_desc))
         if not infra_desc:

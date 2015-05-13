@@ -31,6 +31,8 @@ if __name__ == '__main__':
     manager = manager.InfrastructureManager(occoapp.uds, infra_processor_params)
 
     try:
+        # TODO: Expose the manager through Flask
+        # TODO: Expose InfoBroker
 
     except KeyboardInterrupt:
         log.info('Ctrl+C - Destroying infrastructure and exiting.')

@@ -115,6 +115,9 @@ class InfrastructureManager(object):
         This method can be used to *attach* the manager to infrastructures
         already started and having a state in the database.
 
+        .. todo:: Add callback possibility for when the first pass has been
+            successfully executed (i.e. when the infrastructure is ready).
+
         :param str infra_id: The identifier of the infrastructure. The
             infrastructure must be already compiled and stored in the UDS.
         :raise InfrastructureIDTakenException: when the infrastructure specified

@@ -58,6 +58,8 @@ if __name__ == '__main__':
     @flask.route('/infrastructures/', methods=['GET', 'POST'])
     @flask.route('/infrastructures/<infraid>', methods=['GET', 'DELETE'])
     def submit_infrastructure(infraid=None):
+        log.debug('Serving request %s infrastructures/%r',
+                  request.method, infraid)
         if infraid:
             if request.method == 'DELETE':
                 manager.stop_provisioning(infraid)

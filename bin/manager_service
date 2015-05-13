@@ -57,6 +57,10 @@ if __name__ == '__main__':
     @flask.route('/infrastructures', methods=['POST'])
     def submit_infrastructure():
         infra_desc = request.stream.read()
+        log.info('Submitting infrastructure:\n%s', util.yamldump(infra_desc))
+        if not infra_desc:
+            raise RequestException(400, 'Empty POST data')
+
         try:
             return manager.add(infra_desc)
         except Exception as ex:

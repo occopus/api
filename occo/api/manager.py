@@ -40,6 +40,7 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
     """
 
     def __init__(self, infra_id, ip_config, enactor_interval=10):
+        super(InfrastructureMaintenanceProcess, self).__init__()
         self.infra_id,  self.ip_config = infra_id, ip_config
         self.enactor_interval = enactor_interval
 

@@ -11,6 +11,7 @@ Author: adam.visegradi@sztaki.mta.hu
 import occo.util as util
 import occo.api.occoapp as occoapp
 import occo.api.manager as manager
+from occo.infobroker import main_info_broker
 from flask import Flask, request, jsonify
 
 def setup_args(cfg):
@@ -54,8 +55,18 @@ if __name__ == '__main__':
         response.status_code = 500
         return response
 
-    @flask.route('/infrastructures', methods=['GET', 'POST'])
-    def submit_infrastructure():
+    @flask.route('/infrastructures/', methods=['GET', 'POST'])
+    @flask.route('/infrastructures/<infraid>', methods=['GET', 'DELETE'])
+    def submit_infrastructure(infraid=None):
+        if infraid:
+            if request.method == 'DELETE':
+                manager.stop_provisioning(infraid)
+                manager.tear_down(infraid)
+                return jsonify(dict())
+            else:
+                state = main_info_broker.get('infrastructure.state', infraid)
+                return jsonify(state)
+
         if request.method == 'GET':
             return jsonify(dict(infrastructures=manager.process_table.keys()))
 

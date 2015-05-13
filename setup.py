@@ -17,6 +17,7 @@ setuptools.setup(
              'bin/listnodes',
              'bin/runinfra',
              'bin/redisload',
+             'bin/manager_service',
              ],
     url='http://www.lpds.sztaki.hu/',
     license='LICENSE.txt',

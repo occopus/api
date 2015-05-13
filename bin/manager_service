@@ -62,10 +62,12 @@ if __name__ == '__main__':
             raise RequestException(400, 'Empty POST data')
 
         try:
-            return manager.add(infra_desc)
+            result = manager.add(infra_desc)
         except Exception as ex:
             log.exception('manager.add:')
             raise RequestException(400, str(ex))
+        else:
+            return result
 
     try:
         flask.run()

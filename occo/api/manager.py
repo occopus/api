@@ -128,7 +128,6 @@ class InfrastructureManager(object):
         if infra_id in self.process_table:
             raise InfrastructureIDTakenException(infra_id)
 
-        from occo.api.infra_process import run_infrastructure
         p = InfrastructureMaintenanceProcess(
                 infra_id, self.user_data_store, self.ip_config)
         self.process_table[infra_id] = p

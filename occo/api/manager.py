@@ -90,6 +90,7 @@ class InfrastructureManager(object):
         """
         infra_id = self.submit_infrastructure(infra_desc)
         self.start_provisioning(infra_id)
+        return infra_id
 
     def submit_infrastructure(self, infra_desc):
         """

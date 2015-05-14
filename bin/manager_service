@@ -51,7 +51,9 @@ if __name__ == '__main__':
         return jsonify(error.to_dict())
     @flask.errorhandler(Exception)
     def unhandled_exception(error):
-        log.error('An unhandled exception occured: %r', error)
+        import traceback as tb
+        log.error('An unhandled exception occured: %r\n%s',
+                  error, tb.format_exc(error))
         response = jsonify(dict(message=error.message))
         response.status_code = 500
         return response

@@ -58,6 +58,21 @@ if __name__ == '__main__':
         response.status_code = 500
         return response
 
+    @flask.route('/infrastructures/<infraid>/report', methods=['GET'])
+    def infra_state_report(infraid):
+        log.debug('Serving request %s infrastructures/%r/report',
+                  request.method, infraid)
+        state = main_info_broker.get('infrastructure.state_report', infraid)
+        return jsonify(state)
+
+        try:
+            result = manager.add(infra_desc)
+        except Exception as ex:
+            log.exception('manager.add:')
+            raise RequestException(400, str(ex))
+        else:
+            return result
+
     @flask.route('/infrastructures/', methods=['GET', 'POST'])
     @flask.route('/infrastructures/<infraid>', methods=['GET', 'DELETE'])
     def submit_infrastructure(infraid=None):

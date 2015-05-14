@@ -23,4 +23,5 @@ if __name__ == '__main__':
 
     from occo.infobroker import main_info_broker
     print 'get(%r, %r)'%(occoapp.args.key, occoapp.args.parameters)
-    print main_info_broker.get(occoapp.args.key, *occoapp.args.parameters) 
+    print occo.util.yamldump(
+        main_info_broker.get(occoapp.args.key, *occoapp.args.parameters))

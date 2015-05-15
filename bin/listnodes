@@ -19,10 +19,11 @@ def setup_args(cfg):
     cfg.add_argument('-i', '--infra_id', default=None)
     cfg.add_argument('-n', '--node_name', default=None)
 
-occoapp.setup(setup_args)
+if __name__ == '__main__':
+    occoapp.setup(setup_args)
 
-import occo.infobroker as ib
-print [node for node in
-       ib.main_info_broker.get('node.find',
-                               occoapp.args.infra_id, 
-                               occoapp.args.node_name)]
+    import occo.infobroker as ib
+    print [node for node in
+           ib.main_info_broker.get('node.find',
+                                   occoapp.args.infra_id,
+                                   occoapp.args.node_name)]

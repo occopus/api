@@ -18,8 +18,10 @@ def setup_args(cfg):
     cfg.add_argument('key')
     cfg.add_argument('parameters', nargs='*')
 
-occoapp.setup(setup_args)
+if __name__ == '__main__':
+    occoapp.setup(setup_args)
 
-from occo.infobroker import main_info_broker
-print 'get(%r, %r)'%(occoapp.args.key, occoapp.args.parameters)
-print main_info_broker.get(occoapp.args.key, *occoapp.args.parameters) 
+    from occo.infobroker import main_info_broker
+    print 'get(%r, %r)'%(occoapp.args.key, occoapp.args.parameters)
+    print occo.util.yamldump(
+        main_info_broker.get(occoapp.args.key, *occoapp.args.parameters))

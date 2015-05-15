@@ -1,6 +1,6 @@
+Flask==0.10.1
+PyChef==0.2.3
 PyYAML==3.11
-argparse==1.2.1
-dateutils==0.6.6
 OCCO-Util==0.1.0
 OCCO-InfoBroker==0.1.0
 OCCO-Compiler==0.1.0

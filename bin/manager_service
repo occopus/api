@@ -17,6 +17,7 @@ from flask import Flask, request, jsonify
 def setup_args(cfg):
     cfg.add_argument('--host', type=str, default='127.0.0.1')
     cfg.add_argument('--port', type=int, default=5000)
+    cfg.add_argument('--mock', action='store_true')
     pass # TODO: reconnect to already submitted infrstructures
 
 class RequestException(Exception):
@@ -27,6 +28,54 @@ class RequestException(Exception):
         return dict(status_code=self.status_code,
                     reason=self.reason,
                     message=str(self))
+
+class mocked(object):
+    def __init__(self, mock_fun):
+        self.mock_fun = mock_fun
+    def __call__(self, fun):
+        from functools import wraps
+        @wraps(fun)
+        def wrapped_mock(*args, **kwargs):
+            return self.mock_fun(*args, **kwargs)
+
+        return wrapped_mock if occoapp.args.mock else fun
+
+def mockinfrastatereport(infraid):
+    return 'Mock state report ({0})'.format(infraid)
+mock_infra_registry=dict()
+def mockinfrastructure(infraid=None):
+    log.debug('Serving request %s infrastructures/%r',
+              request.method, infraid)
+    if infraid:
+        if request.method == 'DELETE':
+            if infraid in mock_infra_registry:
+                del mock_infra_registry[infraid]
+            return jsonify(dict())
+        else:
+            if infraid in mock_infra_registry:
+                return jsonify(
+                    dict(
+                        infraid=infraid,
+                        message='Mock infrastructure state',
+                        desc=mock_infra_registry[infraid],
+                    )
+                )
+            else:
+                return jsonify(dict(infraid=infraid,
+                                    message='Unknown infrastructure'))
+
+    if request.method == 'GET':
+        return jsonify(dict(infrastructures=mock_infra_registry.keys()))
+
+    infra_desc = request.stream.read()
+    log.info('Submitting infrastructure:\n%s', util.yamldump(infra_desc))
+    if not infra_desc:
+        raise RequestException(400, 'Empty POST data')
+
+    import uuid
+    result = str(uuid.uuid4())
+    mock_infra_registry[result] = infra_desc
+    return result
 
 if __name__ == '__main__':
 
@@ -60,6 +109,7 @@ if __name__ == '__main__':
         return response
 
     @flask.route('/infrastructures/<infraid>/report', methods=['GET'])
+    @mocked(mockinfrastatereport)
     def infra_state_report(infraid):
         log.debug('Serving request %s infrastructures/%r/report',
                   request.method, infraid)
@@ -76,6 +126,7 @@ if __name__ == '__main__':
 
     @flask.route('/infrastructures/', methods=['GET', 'POST'])
     @flask.route('/infrastructures/<infraid>', methods=['GET', 'DELETE'])
+    @mocked(mockinfrastructure)
     def submit_infrastructure(infraid=None):
         log.debug('Serving request %s infrastructures/%r',
                   request.method, infraid)

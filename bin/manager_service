@@ -15,6 +15,7 @@ from occo.infobroker import main_info_broker
 from flask import Flask, request, jsonify
 
 def setup_args(cfg):
+    cfg.add_argument('--host', type=str, default='127.0.0.1')
     cfg.add_argument('--port', type=int, default=5000)
     pass # TODO: reconnect to already submitted infrstructures
 
@@ -105,7 +106,8 @@ if __name__ == '__main__':
             return result
 
     try:
-        flask.run(port=occoapp.args.port)
+        flask.run(host=occoapp.args.host,
+                  port=occoapp.args.port)
         # TODO: Expose the manager through Flask
         # TODO: Expose InfoBroker
 

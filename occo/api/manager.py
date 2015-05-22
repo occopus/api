@@ -48,7 +48,7 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
         log.info('Starting maintenance process for %r', self.infra_id)
 
         from occo.enactor import Enactor
-        from occo.infraprocessor import InfraProcessor
+        from occo.infraprocessor.infraprocessor import InfraProcessor
 
         infraprocessor = InfraProcessor.instantiate(**self.ip_config)
         enactor = Enactor(self.infra_id, main_info_broker, infraprocessor)

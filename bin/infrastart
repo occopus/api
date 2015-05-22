@@ -16,7 +16,7 @@ def setup_args(cfg):
 def submit_infrastructure(infra_description):
     from occo.compiler import StaticDescription
     from occo.enactor import Enactor
-    from occo.infraprocessor import InfraProcessor
+    from occo.infraprocessor.infraprocessor import InfraProcessor
     # This will not be needed when the Enactor starts using the main_info_broker
     from occo.infobroker import main_info_broker
 

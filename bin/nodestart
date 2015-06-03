@@ -27,11 +27,12 @@ if __name__ == '__main__':
     log.debug('Configuration:\n%r', occoapp.configuration)
     log.info('Node definition:\n%r', node_definition)
 
-    from occo.infraprocessor import InfraProcessor
-    ip = InfraProcessor(protocol='basic',
-                        user_data_store=occoapp.uds,
-                        cloudhandler=occoapp.cloudhandler,
-                        servicecomposer=occoapp.servicecomposer)
+    from occo.infraprocessor.infraprocessor import InfraProcessor
+    ip = InfraProcessor.instantiate(
+        protocol='basic',
+        user_data_store=occoapp.uds,
+        cloudhandler=occoapp.cloudhandler,
+        servicecomposer=occoapp.servicecomposer)
     create_node_command = ip.cri_create_node(node_definition)
     log.debug('CreateNode:\n%s',
               yaml.dump(create_node_command, default_flow_style=False))

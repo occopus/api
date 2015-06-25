@@ -12,7 +12,7 @@ if __name__ == '__main__':
     import occo.infobroker.kvstore
     import occo.infobroker.rediskvstore
     import yaml
-    redis_data = util.yaml_load_file(cfg.redis_data)
+    redis_data = config.yaml_load_file(cfg.redis_data)
 
     kvs = redis_data['kvs']
     data = redis_data['init_data']

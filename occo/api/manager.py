@@ -51,7 +51,7 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
         from occo.infraprocessor.infraprocessor import InfraProcessor
 
         infraprocessor = InfraProcessor.instantiate(**self.ip_config)
-        enactor = Enactor(self.infra_id, main_info_broker, infraprocessor)
+        enactor = Enactor(self.infra_id, infraprocessor)
         try:
             while True:
                 enactor.make_a_pass()

@@ -29,9 +29,7 @@ def submit_infrastructure(infra_description):
                                     user_data_store=uds,
                                     cloudhandler=occoapp.cloudhandler,
                                     servicecomposer=occoapp.servicecomposer)
-    enactor = Enactor(compiled_infrastructure.infra_id,
-                      main_info_broker,
-                      infraprocessor)
+    enactor = Enactor(compiled_infrastructure.infra_id, infraprocessor)
     return compiled_infrastructure.infra_id, infraprocessor, enactor
 
 if __name__ == '__main__':

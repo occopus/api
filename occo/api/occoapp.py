@@ -37,8 +37,8 @@ def setup(setup_args=None, cfg_path=None):
     modvars['servicecomposer'] = occo_infra['servicecomposer']
 
 def yaml_file(filepath):
-    import occo.util
-    return occo.util.yaml_load_file(filepath)
+    import occo.util.config
+    return occo.util.config.yaml_load_file(filepath)
 
 def killall(infra_id, ip):
     import logging

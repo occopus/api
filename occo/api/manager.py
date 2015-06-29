@@ -200,4 +200,4 @@ class InfrastructureManager(object):
         drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
         ip.push_instructions(drop_node_commands)
 
-        ip.push_instructions(ip.cri_drop_environment(infra_id))
+        ip.push_instructions(ip.cri_drop_infrastructure(infra_id))

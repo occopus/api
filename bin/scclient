@@ -21,7 +21,7 @@ if __name__ == '__main__':
     log = logging.getLogger('occo')
 
     test_node_def = dict(name='testnode',
-                         environment_id='role-test')
+                         infra_id='role-test')
     sc = occoapp.infrastructure['servicecomposer']
     import chef
     node = chef.Node('2752011b-41a5-419d-9bcd-585ebd66d906', api=sc.chefapi)

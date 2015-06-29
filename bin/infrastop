@@ -59,4 +59,4 @@ if __name__ == '__main__':
     ip.push_instructions(drop_node_commands)
 
     if occoapp.args.infraid:
-        ip.push_instructions(ip.cri_drop_environment(occoapp.args.infraid))
+        ip.push_instructions(ip.cri_drop_infrastructure(occoapp.args.infraid))

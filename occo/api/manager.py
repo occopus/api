@@ -10,20 +10,18 @@ OCCO Infrastructure Manager
 
 """
 
-__all__ = ['InfrastructureIDTakenException',
-           'InfrastructureIDNotFoundException',
-           'InfrastructureManager',
+__all__ = ['InfrastructureManager',
            'InfrastructureMaintenanceProcess']
 
 import time, os
 from occo.util.parproc import GracefulProcess
+from occo.exceptions import\
+    InfrastructureIDTakenException, \
+    InfrastructureIDNotFoundException
 import occo.infraprocessor as ip
 from occo.infobroker import main_info_broker
 import logging
 log = logging.getLogger('occo.manager_service')
-
-class InfrastructureIDTakenException(Exception): pass
-class InfrastructureIDNotFoundException(Exception): pass
 
 class InfrastructureMaintenanceProcess(GracefulProcess):
     """

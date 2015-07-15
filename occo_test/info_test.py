@@ -5,7 +5,7 @@ from urllib2 import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, Reque
 from urllib import urlencode
 
 import unittest
-from occo_test.InfoProviderEcho import *
+from occo_test.info_provider_echo import *
 from occo.exceptions import KeyNotFoundError, ArgumentError
 import json
 import subprocess

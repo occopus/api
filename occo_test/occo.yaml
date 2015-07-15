@@ -1,5 +1,5 @@
 autoimport: !python_import
-    - InfoProviderEcho
+    - occo_test.info_provider_echo
     - occo.infobroker
     - occo.infobroker.cloud_provider
     - occo.infobroker.uds

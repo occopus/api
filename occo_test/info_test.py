@@ -13,6 +13,8 @@ import time
 
 def setup_module(module):
     subprocess.Popen(['manager_service','--cfg','occo_test/occo.yaml'])
+    # TODO: race condition! This should be some real synchronization
+    time.sleep(1)
 
 def curl(url, params=None, auth=None, req_type="GET", data=None, headers=None):
     post_req = ["POST", "PUT"]

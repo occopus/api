@@ -5,9 +5,16 @@ from urllib2 import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, Reque
 from urllib import urlencode
 
 import unittest
-from InfoProviderEcho import *
+from occo_test.InfoProviderEcho import *
 from occo.exceptions import KeyNotFoundError, ArgumentError
 import json
+import subprocess
+import time
+
+def setup_module(module):
+    pp = "{0}:../occo_test".format(':'.join(sys.path))
+    print pp
+    subprocess.Popen(['manager_service','--cfg','occo_test/occo.yaml'])
 
 class TestEchoInfoProvider(unittest.TestCase):
     def setUp(self):
@@ -24,11 +31,6 @@ class TestEchoInfoProvider(unittest.TestCase):
         #Test the provider directly against "global.KeyNotFoundError" keyword
         with self.assertRaises(KeyNotFoundError) as context:
             self.provider.get("global.KeyNotFoundError", **msg)
-
-    def launch_manager_service(self):
-        #TODO: implement the following command:
-        #PYTHONPATH=/home/occo/occo/occo-api/occo_test ../bin/manager_service --cfg ../occo_test/occo.yaml
-        return
 
     def test_echo(self):
         p = { "param1" : "value1" }

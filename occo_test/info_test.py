@@ -14,6 +14,52 @@ import time
 def setup_module(module):
     subprocess.Popen(['manager_service','--cfg','occo_test/occo.yaml'])
 
+def curl(url, params=None, auth=None, req_type="GET", data=None, headers=None):
+    post_req = ["POST", "PUT"]
+    get_req = ["GET", "DELETE"]
+
+    if params is not None:
+        url += "?" + urlencode(params)
+
+    if req_type not in post_req + get_req:
+        raise IOError("Wrong request type \"%s\" passed" % req_type)
+
+    _headers = {}
+    handler_chain = []
+
+    if auth is not None:
+        manager = HTTPPasswordMgrWithDefaultRealm()
+        manager.add_password(None, url, auth["user"], auth["pass"])
+        handler_chain.append(HTTPBasicAuthHandler(manager))
+
+    if req_type in post_req and data is not None:
+        _headers["Content-Length"] = len(data)
+
+    if headers is not None:
+        _headers.update(headers)
+
+    director = build_opener(*handler_chain)
+
+    if req_type in post_req:
+        if sys.version_info.major == 3:
+            _data = bytes(data, encoding='utf8')
+        else:
+            _data = bytes(data)
+
+        req = Request(url, headers=_headers, data=_data)
+    else:
+        req = Request(url, headers=_headers)
+
+    req.get_method = lambda: req_type
+    response = director.open(req)
+
+    #return {
+    #    "httpcode": response.code,
+    #    "headers": response.info(),
+    #    "content": response.read()
+    #}
+    return response.read()
+
 class TestEchoInfoProvider(unittest.TestCase):
     def setUp(self):
         self.provider = InfoProviderEcho()
@@ -32,14 +78,14 @@ class TestEchoInfoProvider(unittest.TestCase):
 
     def test_echo(self):
         p = { "param1" : "value1" }
-        result = self.curl('http://127.0.0.1:5000/info/global.Echo', params=p )
+        result = curl('http://127.0.0.1:5000/info/global.Echo', params=p )
         self.assertEqual(p,json.loads(result))
         return
 
     def test_argumenterror(self):
         #curl 'http://127.0.0.1:5000/info/global.ArgumentError?param1=value1&param2=value2'
         p = { "param1" : "value1" }
-        result = self.curl('http://127.0.0.1:5000/info/global.ArgumentError', params=p )
+        result = curl('http://127.0.0.1:5000/info/global.ArgumentError', params=p )
         resultj = json.loads(result)['reason']
         self.assertTrue("Invalid parameter value for key" in resultj)
         return
@@ -47,55 +93,10 @@ class TestEchoInfoProvider(unittest.TestCase):
     def test_keynotfounderror(self):
         #curl 'http://127.0.0.1:5000/info/global.KeyNotFoundError?param1=value1&param2=value2'
         p = { "param1" : "value1" }
-        result = self.curl('http://127.0.0.1:5000/info/global.KeyNotFoundError', params=p )
+        result = curl('http://127.0.0.1:5000/info/global.KeyNotFoundError', params=p )
         resultj = json.loads(result)['reason']
         self.assertTrue("Key not found:" in resultj)
         return
 
-    def curl(self, url, params=None, auth=None, req_type="GET", data=None, headers=None):
-        post_req = ["POST", "PUT"]
-        get_req = ["GET", "DELETE"]
-
-        if params is not None:
-            url += "?" + urlencode(params)
-
-        if req_type not in post_req + get_req:
-            raise IOError("Wrong request type \"%s\" passed" % req_type)
-
-        _headers = {}
-        handler_chain = []
-
-        if auth is not None:
-            manager = HTTPPasswordMgrWithDefaultRealm()
-            manager.add_password(None, url, auth["user"], auth["pass"])
-            handler_chain.append(HTTPBasicAuthHandler(manager))
-
-        if req_type in post_req and data is not None:
-            _headers["Content-Length"] = len(data)
-
-        if headers is not None:
-            _headers.update(headers)
-
-        director = build_opener(*handler_chain)
-
-        if req_type in post_req:
-            if sys.version_info.major == 3:
-                _data = bytes(data, encoding='utf8')
-            else:
-                _data = bytes(data)
-
-            req = Request(url, headers=_headers, data=_data)
-        else:
-            req = Request(url, headers=_headers)
-
-        req.get_method = lambda: req_type
-        response = director.open(req)
-
-        #return {
-        #    "httpcode": response.code,
-        #    "headers": response.info(),
-        #    "content": response.read()
-        #}
-        return response.read()
 
 

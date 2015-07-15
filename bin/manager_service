@@ -12,6 +12,7 @@ import occo.util as util
 import occo.api.occoapp as occoapp
 import occo.api.manager as manager
 from occo.infobroker import main_info_broker
+from occo.exceptions import KeyNotFoundError, ArgumentError
 from flask import Flask, request, jsonify
 
 def setup_args(cfg):
@@ -116,14 +117,6 @@ if __name__ == '__main__':
         state = main_info_broker.get('infrastructure.state_report', infraid)
         return jsonify(state)
 
-        try:
-            result = manager.add(infra_desc)
-        except Exception as ex:
-            log.exception('manager.add:')
-            raise RequestException(400, str(ex))
-        else:
-            return result
-
     @flask.route('/infrastructures/', methods=['GET', 'POST'])
     @flask.route('/infrastructures/<infraid>', methods=['GET', 'DELETE'])
     @mocked(mockinfrastructure)
@@ -137,7 +130,7 @@ if __name__ == '__main__':
                 manager.tear_down(infraid)
                 return jsonify(dict())
             else:
-                state = main_info_broker.get('infrastructure.state', infraid)
+                state = main_info_broker.get('infrastructure.state', infra_id=infraid)
                 return jsonify(state)
 
         if request.method == 'GET':
@@ -155,6 +148,23 @@ if __name__ == '__main__':
             raise RequestException(400, str(ex))
         else:
             return result
+
+    @flask.route('/info/<key>', methods=['GET'])
+    def info(key):
+        params=dict((k, v) for k, v in request.args.items())
+        log.debug('Serving request %s info/%s with params: %s', request.method, key, str(params))
+        try:
+            return jsonify(main_info_broker.get(key,**params))
+        except ArgumentError as e:
+            log.info('InfoRouter: ArgumentError: %s', str(e))
+            raise RequestException(400, 'Invalid parameter value for key "{0}"'.format(key), str(e))
+        except KeyNotFoundError as e:
+            log.info('InfoRouter: KeyNotFound: %s', str(e))
+            raise RequestException(404, 'Key not found: "{0}"'.format(key), str(e))
+        except Exception as e:
+            log.info('InfoRouter: Exception: %s', str(e))
+            log.exception('main_info_broker.get:')
+            raise RequestException(404, str(e), 'Request cannot be served.')
 
     try:
         flask.run(host=occoapp.args.host,

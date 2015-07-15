@@ -190,7 +190,7 @@ class InfrastructureManager(object):
                 'Cannot tear down an infrastructure while it\'s '
                 'being maintained.', infra_id)
 
-        from occo.infraprocessor import InfraProcessor
+        from occo.infraprocessor.infraprocessor import InfraProcessor
         from occo.util import flatten
 
         dynamic_state = main_info_broker.get('infrastructure.state', infra_id)

@@ -12,8 +12,6 @@ import subprocess
 import time
 
 def setup_module(module):
-    pp = "{0}:../occo_test".format(':'.join(sys.path))
-    print pp
     subprocess.Popen(['manager_service','--cfg','occo_test/occo.yaml'])
 
 class TestEchoInfoProvider(unittest.TestCase):

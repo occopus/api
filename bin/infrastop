@@ -49,6 +49,7 @@ if __name__ == '__main__':
         cloudhandler=occoapp.cloudhandler,
         servicecomposer=occoapp.servicecomposer)
 
+    """
     from occo.util import flatten
     nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
 
@@ -60,3 +61,9 @@ if __name__ == '__main__':
 
     if occoapp.args.infraid:
         ip.push_instructions(ip.cri_drop_infrastructure(occoapp.args.infraid))
+    """
+
+    import occo.api.occoapp as occoapp
+    occoapp.killall(occoapp.args.infraid,ip)
+
+

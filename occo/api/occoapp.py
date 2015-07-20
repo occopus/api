@@ -44,6 +44,8 @@ def killall(infra_id, ip):
     import logging
     log = logging.getLogger('occo')
 
+    log.debug('OCCOApp: killall() procedure invoked.')
+
     from occo.infobroker import main_info_broker
     dynamic_state = main_info_broker.get('infrastructure.state', infra_id)
 
@@ -56,3 +58,6 @@ def killall(infra_id, ip):
               yaml.dump(drop_node_commands, default_flow_style=False))
 
     ip.push_instructions(drop_node_commands)
+
+    ip.push_instructions(ip.cri_drop_infrastructure(infra_id))
+

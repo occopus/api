@@ -14,15 +14,11 @@ import occo.infobroker as ib
 import yaml
 
 def setup_args(cfg):
-    cfg.add_argument('-i', dest='infraid', default=None)
+    cfg.add_argument('-i', dest='infraid', required=True)
 
 if __name__ == '__main__':
 
     occoapp.setup(setup_args)
-
-    if not occoapp.args.infraid:
-        print 'Please, provide the infrastructure id (-i)'
-        exit(2)
 
     import logging
     log = logging.getLogger('occo')

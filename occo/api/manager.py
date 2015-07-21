@@ -191,13 +191,9 @@ class InfrastructureManager(object):
                 'being maintained.', infra_id)
 
         from occo.infraprocessor.infraprocessor import InfraProcessor
-        from occo.util import flatten
-
-        dynamic_state = main_info_broker.get('infrastructure.state', infra_id)
         ip = InfraProcessor.instantiate(**self.ip_config)
-        nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
 
-        drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
-        ip.push_instructions(drop_node_commands)
+        import occo.api.occoapp as occoapp
+        occoapp.killall(infra_id,ip)
 
-        ip.push_instructions(ip.cri_drop_infrastructure(infra_id))
+

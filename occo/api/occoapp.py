@@ -42,9 +42,9 @@ def yaml_file(filepath):
 
 def killall(infra_id, ip):
     import logging
-    log = logging.getLogger('occo')
+    log = logging.getLogger('occo.occoapp')
 
-    log.debug('OCCOApp: killall() procedure invoked.')
+    log.info('Dropping infrastructure {0}.'.format(infra_id))
 
     from occo.infobroker import main_info_broker
     dynamic_state = main_info_broker.get('infrastructure.state', infra_id)

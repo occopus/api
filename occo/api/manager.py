@@ -194,6 +194,6 @@ class InfrastructureManager(object):
         ip = InfraProcessor.instantiate(**self.ip_config)
 
         import occo.api.occoapp as occoapp
-        occoapp.killall(infra_id,ip)
+        occoapp.teardown(infra_id,ip)
 
 

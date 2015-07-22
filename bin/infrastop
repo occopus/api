@@ -40,6 +40,4 @@ if __name__ == '__main__':
         cloudhandler=occoapp.cloudhandler,
         servicecomposer=occoapp.servicecomposer)
 
-    occoapp.killall(occoapp.args.infraid,ip)
-
-
+    occoapp.killall(occoapp.args.infraid, ip, occoapp.uds)

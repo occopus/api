@@ -154,7 +154,7 @@ if __name__ == '__main__':
         params=dict((k, v) for k, v in request.args.items())
         log.debug('Serving request %s info/%s with params: %s', request.method, key, str(params))
         try:
-            return jsonify({"result": main_info_broker.get(key,**params) })
+            return jsonify({"result": main_info_broker.get(key, **params) })
         except ArgumentError as e:
             log.info('InfoRouter: ArgumentError: %s', str(e))
             raise RequestException(400, 'Invalid parameter value for key "{0}"'.format(key), str(e))

@@ -49,7 +49,7 @@ if __name__ == '__main__':
         enactor.make_a_pass()
     except KeyboardInterrupt:
         log.info('Ctrl+C - Destroying infrastructure and exiting.')
-        occoapp.killall(infraid, ip)
+        occoapp.killall(infraid, ip, occoapp.uds)
 
     import yaml
     from occo.infobroker import main_info_broker

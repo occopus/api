@@ -65,6 +65,3 @@ def teardown(infra_id, ip):
     ip.push_instructions(drop_node_commands)
 
     ip.push_instructions(ip.cri_drop_infrastructure(infra_id))
-
-
-

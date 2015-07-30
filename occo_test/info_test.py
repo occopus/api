@@ -32,7 +32,7 @@ def curl(url, params=None, auth=None, req_type="GET", data=None, headers=None):
         url += "?" + urlencode(params)
 
     if req_type not in post_req + get_req:
-        raise IOError("Wrong request type \"%s\" passed" % req_type)
+        raise IOError("Wrong request type {0!r} passed".format(req_type))
 
     _headers = {}
     handler_chain = []
@@ -75,7 +75,7 @@ class TestEchoInfoProvider(unittest.TestCase):
         self.provider = InfoProviderEcho()
 
     def test_provider_directly(self):
-        msg = { 'param1' : 'value1' }
+        msg = { u'param1' : u'value1' }
         #Test the provider directly with "global.Echo" keyword
         self.assertEqual(self.provider.get("global.Echo", **msg), msg,  
                 'global.Echo failed')
@@ -87,14 +87,14 @@ class TestEchoInfoProvider(unittest.TestCase):
             self.provider.get("global.KeyNotFoundError", **msg)
 
     def test_echo(self):
-        p = { "param1" : "value1" }
+        p = { u"param1" : u"value1" }
         result = curl('http://127.0.0.1:5000/info/global.Echo', params=p )
-        self.assertEqual({'result': p}, json.loads(result))
+        self.assertEqual({u'result': p}, json.loads(result))
         return
 
     def test_argumenterror(self):
         #curl 'http://127.0.0.1:5000/info/global.ArgumentError?param1=value1&param2=value2'
-        p = { "param1" : "value1" }
+        p = { u"param1" : u"value1" }
         result = curl('http://127.0.0.1:5000/info/global.ArgumentError', params=p )
         resultj = json.loads(result)['reason']
         self.assertTrue("Invalid parameter value for key" in resultj)
@@ -102,7 +102,7 @@ class TestEchoInfoProvider(unittest.TestCase):
 
     def test_keynotfounderror(self):
         #curl 'http://127.0.0.1:5000/info/global.KeyNotFoundError?param1=value1&param2=value2'
-        p = { "param1" : "value1" }
+        p = { u"param1" : u"value1" }
         result = curl('http://127.0.0.1:5000/info/global.KeyNotFoundError', params=p )
         resultj = json.loads(result)['reason']
         self.assertTrue("Key not found:" in resultj)

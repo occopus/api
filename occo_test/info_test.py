@@ -89,7 +89,7 @@ class TestEchoInfoProvider(unittest.TestCase):
     def test_echo(self):
         p = { "param1" : "value1" }
         result = curl('http://127.0.0.1:5000/info/global.Echo', params=p )
-        self.assertEqual(p,json.loads(result))
+        self.assertEqual({'result': p}, json.loads(result))
         return
 
     def test_argumenterror(self):

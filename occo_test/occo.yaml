@@ -6,11 +6,10 @@ autoimport: !python_import
     - occo.cloudhandler
     - occo.plugins.cloudhandler.boto
     - occo.plugins.infraprocessor.basic_infraprocessor
-    - occo.infraprocessor.node_resolution.chef_cloudinit
+    - occo.plugins.infraprocessor.node_resolution.chef_cloudinit
     - occo.infraprocessor.synchronization.primitives
     - occo.servicecomposer
     - occo.plugins.servicecomposer.chef
-    - occo.demo.ocdemo
 logging: !yaml_import
     url: file://logging.yaml
 infrastructure: !yaml_import

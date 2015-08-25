@@ -29,13 +29,11 @@ setuptools.setup(
     long_description=open('README.txt').read(),
     install_requires=[
         'Flask',
-        'PyChef',
         'PyYAML',
-        'OCCO-Util',
-        'OCCO-InfoBroker',
         'OCCO-Compiler',
         'OCCO-Enactor',
+        'OCCO-InfoBroker',
         'OCCO-InfraProcessor',
-        'OCCO-ServiceComposer',
+        'OCCO-Util',
     ]
 )

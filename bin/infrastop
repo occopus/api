@@ -33,7 +33,7 @@ if __name__ == '__main__':
     log.debug('Infrastructure state:\n%s',
         yaml.dump(dynamic_state, default_flow_style=False))
 
-    from occo.infraprocessor.infraprocessor import InfraProcessor
+    from occo.infraprocessor import InfraProcessor
     ip = InfraProcessor.instantiate(
         protocol='basic',
         user_data_store=occoapp.uds,

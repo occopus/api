@@ -46,7 +46,7 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
         log.info('Starting maintenance process for %r', self.infra_id)
 
         from occo.enactor import Enactor
-        from occo.infraprocessor.infraprocessor import InfraProcessor
+        from occo.infraprocessor import InfraProcessor
 
         infraprocessor = InfraProcessor.instantiate(**self.ip_config)
         enactor = Enactor(self.infra_id, infraprocessor)
@@ -190,7 +190,7 @@ class InfrastructureManager(object):
                 'Cannot tear down an infrastructure while it\'s '
                 'being maintained.', infra_id)
 
-        from occo.infraprocessor.infraprocessor import InfraProcessor
+        from occo.infraprocessor import InfraProcessor
         ip = InfraProcessor.instantiate(**self.ip_config)
 
         import occo.api.occoapp as occoapp

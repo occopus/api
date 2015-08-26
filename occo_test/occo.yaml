@@ -3,14 +3,13 @@ autoimport: !python_import
     - occo.infobroker
     - occo.infobroker.uds
     - occo.infobroker.rediskvstore
-    - occo.cloudhandler.common
-    - occo.cloudhandler.backends.boto
-    - occo.infraprocessor.basic_infraprocessor
-    - occo.infraprocessor.node_resolution.backends.chef
+    - occo.cloudhandler
+    - occo.plugins.cloudhandler.boto
+    - occo.plugins.infraprocessor.basic_infraprocessor
+    - occo.plugins.infraprocessor.node_resolution.chef_cloudinit
     - occo.infraprocessor.synchronization.primitives
-    - occo.servicecomposer.servicecomposer
-    - occo.servicecomposer.backends.chef
-    - occo.demo.ocdemo
+    - occo.servicecomposer
+    - occo.plugins.servicecomposer.chef
 logging: !yaml_import
     url: file://logging.yaml
 infrastructure: !yaml_import

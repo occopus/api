@@ -27,7 +27,7 @@ if __name__ == '__main__':
     log.debug('Configuration:\n%r', occoapp.configuration)
     log.info('Node definition:\n%r', node_definition)
 
-    from occo.infraprocessor.infraprocessor import InfraProcessor
+    from occo.infraprocessor import InfraProcessor
     ip = InfraProcessor.instantiate(
         protocol='basic',
         user_data_store=occoapp.uds,

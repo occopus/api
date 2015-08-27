@@ -48,6 +48,7 @@ def killall(infra_id, ip, uds):
 def teardown(infra_id, ip):
     import logging
     log = logging.getLogger('occo.occoapp')
+    datalog = logging.getLogger('occo.data.occoapp')
 
     log.info('Dropping infrastructure {0}.'.format(infra_id))
 
@@ -59,8 +60,9 @@ def teardown(infra_id, ip):
 
     import yaml
     drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
-    log.debug('DropNode:\n%s',
-              yaml.dump(drop_node_commands, default_flow_style=False))
+    log.debug('Dropping nodes: %r', [n['node_id'] for n in nodes])
+    datalog.debug('DropNode:\n%s',
+                  yaml.dump(drop_node_commands, default_flow_style=False))
 
     ip.push_instructions(drop_node_commands)
 

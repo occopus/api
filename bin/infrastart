@@ -12,6 +12,10 @@ import occo.api.occoapp as occoapp
 
 def setup_args(cfg):
     cfg.add_argument('infra_def', type=occoapp.yaml_file)
+    cfg.add_argument('--parallelize',
+                     action='store_const', dest='strategy',
+                     const='parallel', default='sequential',
+                     help='Parallelize processing instructions')
 
 def submit_infrastructure(infra_description):
     from occo.compiler import StaticDescription
@@ -26,6 +30,7 @@ def submit_infrastructure(infra_description):
 
     infraprocessor = InfraProcessor.instantiate(
                                     protocol='basic',
+                                    process_strategy=occoapp.args.strategy,
                                     user_data_store=uds,
                                     cloudhandler=occoapp.cloudhandler,
                                     servicecomposer=occoapp.servicecomposer)

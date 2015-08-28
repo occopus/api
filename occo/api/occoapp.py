@@ -50,7 +50,7 @@ def teardown(infra_id, ip):
     log = logging.getLogger('occo.occoapp')
     datalog = logging.getLogger('occo.data.occoapp')
 
-    log.info('Dropping infrastructure {0}.'.format(infra_id))
+    log.info('Dropping infrastructure {0}'.format(infra_id))
 
     from occo.infobroker import main_info_broker
     dynamic_state = main_info_broker.get('infrastructure.state', infra_id)

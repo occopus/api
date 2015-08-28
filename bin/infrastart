@@ -56,8 +56,12 @@ except KeyboardInterrupt:
     log.info('Ctrl+C - Destroying infrastructure and exiting.')
     occoapp.killall(infraid, ip, occoapp.uds)
 except Exception:
+    log.error('Error occured, tearing down the infrastructure')
+    try:
+        occoapp.killall(infraid, ip, occoapp.uds)
+    except:
+        log.exception('IGNORING exception while tearing down infrastructure:')
     log.exception('An error occured while building the infrastructure:')
-    occoapp.killall(infraid, ip, occoapp.uds)
     log.error('An unrecoverable error occured; the partially built '
               'infrastructure has been torn down.')
     exit(1)

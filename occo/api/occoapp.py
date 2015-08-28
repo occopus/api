@@ -56,7 +56,7 @@ def teardown(infra_id, ip):
     dynamic_state = main_info_broker.get('infrastructure.state', infra_id)
 
     from occo.util import flatten
-    nodes = flatten(i.itervalues() for i in dynamic_state.itervalues())
+    nodes = list(flatten(i.itervalues() for i in dynamic_state.itervalues()))
 
     import yaml
     drop_node_commands = [ip.cri_drop_node(n) for n in nodes]

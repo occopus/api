@@ -55,6 +55,8 @@ try:
 except KeyboardInterrupt:
     log.info('Ctrl+C - Destroying infrastructure and exiting.')
     occoapp.killall(infraid, ip, occoapp.uds)
+    log.info('Cancelled starting infrastructure (Ctrl+C); the partially built '
+             'infrastructure has been torn down.')
 except Exception:
     log.error('Error occured, tearing down the infrastructure')
     try:

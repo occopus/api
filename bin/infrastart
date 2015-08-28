@@ -38,25 +38,30 @@ def submit_infrastructure(infra_description):
     enactor = Enactor(compiled_infrastructure.infra_id, infraprocessor)
     return compiled_infrastructure.infra_id, infraprocessor, enactor
 
-if __name__ == '__main__':
-    occoapp.setup(setup_args)
+occoapp.setup(setup_args)
 
-    import logging
-    log = logging.getLogger('occo')
+import logging
+log = logging.getLogger('occo')
 
-    infra_description = occoapp.args.infra_def
-    log.debug('Infrastructure description:\n%r', infra_description)
+infra_description = occoapp.args.infra_def
+log.debug('Infrastructure description:\n%r', infra_description)
 
-    infraid, ip, enactor = submit_infrastructure(infra_description)
+infraid, ip, enactor = submit_infrastructure(infra_description)
 
-    log.info('Submitted infrastructure: %r', infraid)
+log.info('Submitted infrastructure: %r', infraid)
 
-    try:
-        enactor.make_a_pass()
-    except KeyboardInterrupt:
-        log.info('Ctrl+C - Destroying infrastructure and exiting.')
-        occoapp.killall(infraid, ip, occoapp.uds)
-
+try:
+    enactor.make_a_pass()
+except KeyboardInterrupt:
+    log.info('Ctrl+C - Destroying infrastructure and exiting.')
+    occoapp.killall(infraid, ip, occoapp.uds)
+except Exception:
+    log.exception('An error occured while building the infrastructure:')
+    occoapp.killall(infraid, ip, occoapp.uds)
+    log.error('An unrecoverable error occured; the partially built '
+              'infrastructure has been torn down.')
+    exit(1)
+else:
     import yaml
     from occo.infobroker import main_info_broker
     cleaner = util.Cleaner(['context'])

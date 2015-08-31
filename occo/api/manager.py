@@ -20,8 +20,10 @@ from occo.exceptions import\
     InfrastructureIDNotFoundException
 import occo.infraprocessor as ip
 from occo.infobroker import main_info_broker
+
 import logging
 log = logging.getLogger('occo.manager_service')
+datalog = logging.getLogger('occo.data.manager_service')
 
 class InfrastructureMaintenanceProcess(GracefulProcess):
     """
@@ -101,6 +103,7 @@ class InfrastructureManager(object):
 
         from occo.compiler import StaticDescription
 
+        datalog.debug('Adding infrastructure:\n%r', infra_desc)
         compiled_infrastructure = StaticDescription(infra_desc)
         self.user_data_store.add_infrastructure(compiled_infrastructure)
         infra_id = compiled_infrastructure.infra_id
@@ -129,6 +132,7 @@ class InfrastructureManager(object):
         if infra_id in self.process_table:
             raise InfrastructureIDTakenException(infra_id)
 
+        log.debug('Starting provisioning infrastructure %r', infra_id)
         p = InfrastructureMaintenanceProcess(infra_id, self.ip_config)
         self.process_table[infra_id] = p
         log.info('Spawning maintenance process for %r', infra_id)
@@ -148,6 +152,7 @@ class InfrastructureManager(object):
         :raise InfrastructureIDNotFoundException: if the infrastructure is not
             managed.
         """
+        log.debug('Stopping provisioning infrastructure %r', infra_id)
         try:
             p = self.process_table.pop(infra_id)
             p.graceful_terminate(wait_timeout)
@@ -183,12 +188,17 @@ class InfrastructureManager(object):
         :param str infra_id: The identifier of the infrastructure.
         :raise ValueError: if the infrastructure is being maintained by this
             manager. Call :meth:`stop_provisioning` first, explicitly.
+
+        .. todo:: Maybe implicitly call :meth:`stop_provisioning` instead of
+            raising an error?
         """
 
         if infra_id in self.process_table:
             raise ValueError(
                 'Cannot tear down an infrastructure while it\'s '
                 'being maintained.', infra_id)
+
+        log.debug('Tearing down infrastructure %r', infra_id)
 
         from occo.infraprocessor import InfraProcessor
         ip = InfraProcessor.instantiate(**self.ip_config)

@@ -38,41 +38,44 @@ def submit_infrastructure(infra_description):
     enactor = Enactor(compiled_infrastructure.infra_id, infraprocessor)
     return compiled_infrastructure.infra_id, infraprocessor, enactor
 
-occoapp.setup(setup_args)
+if __name__ == '__main__':
 
-import logging
-log = logging.getLogger('occo')
+    occoapp.setup(setup_args)
 
-infra_description = occoapp.args.infra_def
-log.debug('Infrastructure description:\n%r', infra_description)
+    import logging
+    log = logging.getLogger('occo')
 
-infraid, ip, enactor = submit_infrastructure(infra_description)
+    infra_description = occoapp.args.infra_def
+    log.debug('Infrastructure description:\n%r', infra_description)
 
-log.info('Submitted infrastructure: %r', infraid)
+    infraid, ip, enactor = submit_infrastructure(infra_description)
 
-try:
-    enactor.make_a_pass()
-except KeyboardInterrupt:
-    log.info('Ctrl+C - Destroying infrastructure and exiting.')
-    occoapp.killall(infraid, ip, occoapp.uds)
-    log.info('Cancelled starting infrastructure (Ctrl+C); the partially built '
-             'infrastructure has been torn down.')
-except Exception:
-    log.error('Error occured, tearing down the infrastructure')
+    log.info('Submitted infrastructure: %r', infraid)
+
     try:
+        enactor.make_a_pass()
+    except KeyboardInterrupt:
+        log.info('Ctrl+C - Destroying infrastructure and exiting.')
         occoapp.killall(infraid, ip, occoapp.uds)
-    except:
-        log.exception('IGNORING exception while tearing down infrastructure:')
-    log.exception('An error occured while building the infrastructure:')
-    log.error('An unrecoverable error occured; the partially built '
-              'infrastructure has been torn down.')
-    exit(1)
-else:
-    import yaml
-    from occo.infobroker import main_info_broker
-    cleaner = util.Cleaner(['context'])
-    state = main_info_broker.get('infrastructure.state', infraid)
-    log.info('Submitted infrastructure dynamic state:\n%s',
-             yaml.dump(cleaner.deep_copy(state),
-                       default_flow_style=False))
-    print infraid
+        log.info('Cancelled starting infrastructure (Ctrl+C); the partially'
+                 ' built infrastructure has been torn down.')
+    except Exception:
+        log.error('Error occured, tearing down the infrastructure')
+        try:
+            occoapp.killall(infraid, ip, occoapp.uds)
+        except:
+            log.exception(
+                'IGNORING exception while tearing down infrastructure:')
+        log.exception('An error occured while building the infrastructure:')
+        log.error('An unrecoverable error occured; the partially built '
+                  'infrastructure has been torn down.')
+        exit(1)
+    else:
+        import yaml
+        from occo.infobroker import main_info_broker
+        cleaner = util.Cleaner(['context'])
+        state = main_info_broker.get('infrastructure.state', infraid)
+        log.info('Submitted infrastructure dynamic state:\n%s',
+                 yaml.dump(cleaner.deep_copy(state),
+                           default_flow_style=False))
+        print infraid

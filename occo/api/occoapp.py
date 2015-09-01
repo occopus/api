@@ -41,6 +41,8 @@ def yaml_file(filepath):
     return occo.util.config.yaml_load_file(filepath)
 
 def killall(infra_id, ip, uds):
+    import logging
+    log = logging.getLogger('occo.occoapp')
     log.info('Dropping infrastructure %r', infra_id)
     teardown(infra_id, ip)
     uds.remove_infrastructure(infra_id)

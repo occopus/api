@@ -35,10 +35,6 @@ if __name__ == '__main__':
         yaml.dump(dynamic_state, default_flow_style=False))
 
     from occo.infraprocessor import InfraProcessor
-    ip = InfraProcessor.instantiate(
-        protocol='basic',
-        user_data_store=occoapp.uds,
-        cloudhandler=occoapp.cloudhandler,
-        servicecomposer=occoapp.servicecomposer)
+    ip = InfraProcessor.instantiate(protocol='basic')
 
-    occoapp.killall(occoapp.args.infraid, ip, occoapp.uds)
+    occoapp.killall(occoapp.args.infraid, ip)

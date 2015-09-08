@@ -5,6 +5,30 @@
 Common functions of a generic OCCO app.
 
 Author: Adam Visegradi <adam.visegradi@sztaki.mta.hu>
+
+This module can be used to implement OCCO-based applications in a unified way.
+The module provides features for command-line and file based configuration of
+an OCCO application, and other generic features.
+
+There are *two* ways to build an OCCO application.
+
+1. The components provided by OCCO can be used as simple librares: they can be
+   imported and glued together with specialized code, a script.
+
+2. The other way is to use this module as the core of such an application. This
+   module can build an OCCO architecture based on the contents of a YAML config
+   file. (Utilizing the highly dynamic nature of YAML compared to other markup
+   languages.)
+
+The :func:`setup` function expects a config file either through its
+``cfg_path`` parameter, or it will try to get the path from the command line,
+or it will try some default paths (see :func:`occo.util.config.config` for
+specifics). See the documentation of :func:`setup` for details.
+
+.. todo:: Update demo configurations to use ``"components"`` instead of
+    ``"infrastructure"`` to avoid confusion. When done, update :func:`setup` to
+    disallow ``"infrastructure"`` entirely.
+
 """
 
 args = None
@@ -17,33 +41,109 @@ infrastructure = None
 """The OCCO infrastructure defined in the configuration."""
 
 def setup(setup_args=None, cfg_path=None):
+    """
+    Build an OCCO application from configuration.
+
+    :param function setup_args: A function that accepts an
+        :class:`argparse.ArgumentParser` object. This function can set up the
+        argument parser as needed (mainly: add command line arguments).
+    :param str cfg_path: Optional. The path of the configuration file. If
+        unspecified, other sources will be used (see
+        :func:`occo.util.config.config` for details).
+
+    **OCCO Configuration**
+
+    OCCO uses YAML as a configuration language, mainly for its dynamic
+    properties, and its human readability. The parsed configuration is a
+    dictionary, containing both static parameters and objects already
+    instantiated (or executed, sometimes!) by the YAML parser.
+
+    The configuration must contain the following items.
+
+        ``logging``
+
+            The :mod:`logging` configuration dictionary that will be used with
+            :func:`logging.config.dictConfig` to setup logging.
+        
+        ``components``
+
+            The components of the OCCO architecture that's need to be built.
+
+                ``cloudhandler``
+
+                    *The* ``CloudHandler`` instance (singleton) to be used by
+                    other components (e.g. the
+                    :class:`~occo.infraprocessor.InfraProcessor`. Multiple
+                    backends can be supported by using a basic
+                    :class:`occo.cloudhandler.CloudHandler` instance here
+                    configured with multiple backend clouds.
+
+                ``servicecomposer``
+
+                    *The* ``ServiceComposer`` instance (singleton) to be used
+                    by other components (e.g. the
+                    :class:`~occo.infraprocessor.InfraProcessor`. Multiple
+                    backends can be supported by using a basic
+                    :class:`occo.cloudhandler.ServiceComposer` instance here
+                    configured with multiple backend service composers [#f1]_.
+
+                ``uds``
+
+                    The storage used by this OCCO application.
+
+    .. [#f1] This feature is not yet implemented at the time of writing.
+
+    .. todo:: Change conditionals and scattered error handling in this function
+        to preliminary schema-checking (when the schema has been finalized).
+    """
+    import occo.exceptions as exc
+    import occo.util as util
     import occo.util.config as config
+    import occo.infobroker as ib
+    import logging
+    import os
 
     cfg = config.config(setup_args=setup_args, cfg_path=cfg_path)
 
-    import logging
-    import os
     log = logging.getLogger('occo')
     log.info('Starting up; PID = %d', os.getpid())
 
-    # This is shorter than listing all variables with `global`
+    # This is shorter and faster than setting all variables through
+    # `globals()`, and much shorter than listing all variables as "global"
     modvars = globals()
+
     modvars['args'] = cfg
     modvars['configuration'] = cfg.configuration
-    occo_infra = cfg.configuration['infrastructure']
-    modvars['infrastructure'] = occo_infra
-    modvars['uds'] = occo_infra['uds']
-    modvars['cloudhandler'] = occo_infra['cloudhandler']
-    modvars['servicecomposer'] = occo_infra['servicecomposer']
+    try:
+        # TODO The following is here for backwards compatibility. When demos
+        # have been updated to use 'components' as key, delete this code and
+        # use the commented-out version below it.
+        occo_infra = util.coalesce(
+            cfg.configuration.get('components'),
+            cfg.configuration.get('infrastructure'),
+            KeyError('components')
+        )
+        #occo_infra = cfg.configuration['components']
+        modvars['components'] = occo_infra
+
+        ib.real_main_info_broker = occo_infra['infobroker']
+        ib.real_main_uds = occo_infra['uds']
+        ib.real_main_cloudhandler = occo_infra['cloudhandler']
+        ib.real_main_servicecomposer = occo_infra['servicecomposer']
+    except KeyError as ex:
+        raise exc.MissingConfigurationError(ex.args[0])
 
 def yaml_file(filepath):
     import occo.util.config
     return occo.util.config.yaml_load_file(filepath)
 
-def killall(infra_id, ip, uds):
+def killall(infra_id, ip):
+    import logging
+    import occo.infobroker as ib
+    log = logging.getLogger('occo.occoapp')
     log.info('Dropping infrastructure %r', infra_id)
     teardown(infra_id, ip)
-    uds.remove_infrastructure(infra_id)
+    ib.main_uds.remove_infrastructure(infra_id)
 
 def teardown(infra_id, ip):
     import logging

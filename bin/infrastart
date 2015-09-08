@@ -10,6 +10,7 @@ Author: adam.visegradi@sztaki.mta.hu
 
 import occo.api.occoapp as occoapp
 import occo.util as util
+import occo.infobroker as ib
 
 def setup_args(cfg):
     cfg.add_argument('infra_def', type=occoapp.yaml_file)
@@ -25,16 +26,12 @@ def submit_infrastructure(infra_description):
     # This will not be needed when the Enactor starts using the main_info_broker
     from occo.infobroker import main_info_broker
 
-    uds = occoapp.uds
     compiled_infrastructure = StaticDescription(infra_description)
-    uds.add_infrastructure(compiled_infrastructure)
+    ib.main_uds.add_infrastructure(compiled_infrastructure)
 
     infraprocessor = InfraProcessor.instantiate(
                                     protocol='basic',
-                                    process_strategy=occoapp.args.strategy,
-                                    user_data_store=uds,
-                                    cloudhandler=occoapp.cloudhandler,
-                                    servicecomposer=occoapp.servicecomposer)
+                                    process_strategy=occoapp.args.strategy)
     enactor = Enactor(compiled_infrastructure.infra_id, infraprocessor)
     return compiled_infrastructure.infra_id, infraprocessor, enactor
 
@@ -44,6 +41,7 @@ if __name__ == '__main__':
 
     import logging
     log = logging.getLogger('occo')
+    datalog = logging.getLogger('occo.data')
 
     infra_description = occoapp.args.infra_def
     log.debug('Infrastructure description:\n%r', infra_description)
@@ -56,13 +54,13 @@ if __name__ == '__main__':
         enactor.make_a_pass()
     except KeyboardInterrupt:
         log.info('Ctrl+C - Destroying infrastructure and exiting.')
-        occoapp.killall(infraid, ip, occoapp.uds)
+        occoapp.killall(infraid, ip)
         log.info('Cancelled starting infrastructure (Ctrl+C); the partially'
                  ' built infrastructure has been torn down.')
     except Exception:
         log.error('Error occured, tearing down the infrastructure')
         try:
-            occoapp.killall(infraid, ip, occoapp.uds)
+            occoapp.killall(infraid, ip)
         except:
             log.exception(
                 'IGNORING exception while tearing down infrastructure:')
@@ -73,9 +71,8 @@ if __name__ == '__main__':
     else:
         import yaml
         from occo.infobroker import main_info_broker
-        cleaner = util.Cleaner(['context'])
         state = main_info_broker.get('infrastructure.state', infraid)
-        log.info('Submitted infrastructure dynamic state:\n%s',
-                 yaml.dump(cleaner.deep_copy(state),
-                           default_flow_style=False))
+        log.info('Submitted infrastructure: %r', infraid)
+        datalog.debug('Submitted infrastructure dynamic state:\n%s',
+                 yaml.dump(state,default_flow_style=False))
         print infraid

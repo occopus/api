@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
     import logging
     log = logging.getLogger('occo')
+    datalog = logging.getLogger('occo.data')
 
     log.debug('Configuration:\n%r', occoapp.configuration)
 
@@ -30,14 +31,10 @@ if __name__ == '__main__':
             occoapp.args.infraid)
     dynamic_state = ib.main_info_broker.get(
         'infrastructure.state', occoapp.args.infraid)
-    log.debug('Infrastructure state:\n%s',
+    datalog.debug('Infrastructure state:\n%s',
         yaml.dump(dynamic_state, default_flow_style=False))
 
     from occo.infraprocessor import InfraProcessor
-    ip = InfraProcessor.instantiate(
-        protocol='basic',
-        user_data_store=occoapp.uds,
-        cloudhandler=occoapp.cloudhandler,
-        servicecomposer=occoapp.servicecomposer)
+    ip = InfraProcessor.instantiate(protocol='basic')
 
-    occoapp.killall(occoapp.args.infraid, ip, occoapp.uds)
+    occoapp.killall(occoapp.args.infraid, ip)

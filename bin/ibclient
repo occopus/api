@@ -3,9 +3,15 @@
 # Copyright (C) 2015 MTA SZTAKI
 
 """
-OCCO InfoBroker CLI.
+InfoBroker client
+~~~~~~~~~~~~~~~~~
 
-Author: adam.visegradi@sztaki.mta.hu
+Query information items from an InfoBroker.
+
+Author: Adam Visegradi <adam.visegradi@sztaki.mta.hu>
+
+
+
 """
 
 import occo.api.occoapp as occoapp

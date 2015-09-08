@@ -58,8 +58,7 @@ def setup(setup_args=None, cfg_path=None):
     dictionary, containing both static parameters and objects already
     instantiated (or executed, sometimes!) by the YAML parser.
 
-    In the configuration, everything is at the user's liberty. The following is
-    *recommended* structure of an OCCO configuration.
+    The configuration must contain the following items.
 
         ``logging``
 
@@ -94,20 +93,45 @@ def setup(setup_args=None, cfg_path=None):
 
     .. [#f1] This feature is not yet implemented at the time of writing.
 
+    .. todo:: Change conditionals and scattered error handling in this function
+        to preliminary schema-checking (when the schema has been finalized).
     """
+    import occo.exceptions as exc
+    import occo.util as util
     import occo.util.config as config
+    import occo.infobroker as ib
+    import logging
+    import os
 
     cfg = config.config(setup_args=setup_args, cfg_path=cfg_path)
 
-    import logging
-    import os
     log = logging.getLogger('occo')
     log.info('Starting up; PID = %d', os.getpid())
 
-    # This is shorter than listing all variables with `global`
+    # This is shorter and faster than setting all variables through
+    # `globals()`, and much shorter than listing all variables as "global"
     modvars = globals()
+
     modvars['args'] = cfg
     modvars['configuration'] = cfg.configuration
+    try:
+        # TODO The following is here for backwards compatibility. When demos
+        # have been updated to use 'components' as key, delete this code and
+        # use the commented-out version below it.
+        occo_infra = util.coalesce(
+            cfg.configuration.get('components'),
+            cfg.configuration.get('infrastructure'),
+            KeyError('components')
+        )
+        #occo_infra = cfg.configuration['components']
+        modvars['components'] = occo_infra
+
+        ib.real_main_info_broker = occo_infra['infobroker']
+        ib.real_main_uds = occo_infra['uds']
+        ib.real_main_cloudhandler = occo_infra['cloudhandler']
+        ib.real_main_servicecomposer = occo_infra['servicecomposer']
+    except KeyError as ex:
+        raise exc.MissingConfigurationError(ex.args[0])
 
 def yaml_file(filepath):
     import occo.util.config

@@ -18,6 +18,8 @@ def setup_args(cfg):
                      action='store_const', dest='strategy',
                      const='parallel', default='sequential',
                      help='Parallelize processing instructions')
+    cfg.add_argument('--listips', action='store_true', default=False,
+                    help='Lists nodes with ip addresses')
 
 def submit_infrastructure(infra_description):
     from occo.compiler import StaticDescription
@@ -71,8 +73,17 @@ if __name__ == '__main__':
     else:
         import yaml
         from occo.infobroker import main_info_broker
+
         state = main_info_broker.get('infrastructure.state', infraid)
         log.info('Submitted infrastructure: %r', infraid)
         datalog.debug('Submitted infrastructure dynamic state:\n%s',
                  yaml.dump(state,default_flow_style=False))
+
+        if occoapp.args.listips:
+            log.info('List of ip addresses:')
+            for nodename in state:
+                log.info('%s:',nodename)
+                for node in state[nodename]:
+                    log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
+        
         print infraid

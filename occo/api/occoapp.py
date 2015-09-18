@@ -130,6 +130,9 @@ def setup(setup_args=None, cfg_path=None):
         ib.real_main_uds = occo_infra['uds']
         ib.real_main_cloudhandler = occo_infra['cloudhandler']
         ib.real_main_servicecomposer = occo_infra['servicecomposer']
+
+        util.global_dry_run_set(util.coalesce(occo_infra.get('dry_run'), False))
+
     except KeyError as ex:
         raise exc.MissingConfigurationError(ex.args[0])
 

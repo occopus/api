@@ -9,11 +9,6 @@ common_config:
         auth_data:
             username: dummy
             password: dummy
-        drett_config:
-            url: http://c153-40.localcloud:5002/drett
-            application: occo-infraprocessor
-            module: nodestart
-            timeout: 600
 
 cloudhandler: !CloudHandler &ch
     <<: *lpds_boto

@@ -1,8 +1,3 @@
-drett_config: &DRETT_CONFIG
-    url: http://c153-40.localcloud:5002/drett
-    application: occo-test
-    module: boto-handler
-    timeout: 600
 default_mqconfig: !yaml_import &MQCFG 
     url: file://mqcfg.yaml
 ip_mqconfig: &IP_MQCFG
@@ -37,8 +32,6 @@ clouds:
             - uds://<user_auth_data> (acq.d by infraprocessor)
             - file://<path to yaml containing only auth_data> (acq.d by CH)
             - mapping written directly here (if security is not a concern)
-        drett_config:
-            <<: *DRETT_CONFIG
 node_defs:
     node1:
         image_id: ami-00001082 # Ubuntu 14.04 cloud-init

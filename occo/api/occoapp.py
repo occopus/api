@@ -25,10 +25,6 @@ The :func:`setup` function expects a config file either through its
 or it will try some default paths (see :func:`occo.util.config.config` for
 specifics). See the documentation of :func:`setup` for details.
 
-.. todo:: Update demo configurations to use ``"components"`` instead of
-    ``"infrastructure"`` to avoid confusion. When done, update :func:`setup` to
-    disallow ``"infrastructure"`` entirely.
-
 """
 
 args = None
@@ -115,15 +111,7 @@ def setup(setup_args=None, cfg_path=None):
     modvars['args'] = cfg
     modvars['configuration'] = cfg.configuration
     try:
-        # TODO The following is here for backwards compatibility. When demos
-        # have been updated to use 'components' as key, delete this code and
-        # use the commented-out version below it.
-        occo_infra = util.coalesce(
-            cfg.configuration.get('components'),
-            cfg.configuration.get('infrastructure'),
-            KeyError('components')
-        )
-        #occo_infra = cfg.configuration['components']
+        occo_infra = cfg.configuration['components']
         modvars['components'] = occo_infra
 
         ib.real_main_info_broker = occo_infra['infobroker']

@@ -25,5 +25,5 @@ if __name__ == '__main__':
     import occo.infobroker as ib
     print [node for node in
            ib.main_info_broker.get('node.find',
-                                   occoapp.args.infra_id,
-                                   occoapp.args.node_name)]
+                                   infra_id=occoapp.args.infra_id,
+                                   name=occoapp.args.node_name)]

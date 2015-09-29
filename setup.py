@@ -15,10 +15,9 @@ setuptools.setup(
         'occo.api',
     ],
     scripts=[
-        'bin/nodestart', 'bin/infrastart',
-        'bin/nodestop', 'bin/infrastop',
+        'bin/infrastart',
+        'bin/infrastop',
         'bin/ibclient',
-        'bin/listkeys',
         'bin/listnodes',
         'bin/redisload',
         'bin/manager_service',

@@ -18,6 +18,10 @@ from flask import Flask, request, jsonify
 def setup_args(cfg):
     cfg.add_argument('--host', type=str, default='127.0.0.1')
     cfg.add_argument('--port', type=int, default=5000)
+    cfg.add_argument('--parallelize',
+                     action='store_const', dest='strategy',
+                     const='parallel', default='sequential',
+                     help='Parallelize processing instructions')
     cfg.add_argument('--mock', action='store_true')
     pass # TODO: reconnect to already submitted infrstructures
 
@@ -87,13 +91,7 @@ if __name__ == '__main__':
     import logging
     log = logging.getLogger('occo.manager-service')
 
-    infra_processor_params = dict(
-        protocol='basic',
-        user_data_store=occoapp.uds,
-        cloudhandler=occoapp.cloudhandler,
-        servicecomposer=occoapp.servicecomposer)
-
-    manager = manager.InfrastructureManager(occoapp.uds, infra_processor_params)
+    manager = manager.InfrastructureManager(process_strategy = occoapp.args.strategy)
 
     @flask.errorhandler(RequestException)
     def handled_exception(error):

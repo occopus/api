@@ -19,7 +19,9 @@ from occo.exceptions import\
     InfrastructureIDTakenException, \
     InfrastructureIDNotFoundException
 import occo.infraprocessor as ip
+
 from occo.infobroker import main_info_broker
+from occo.infobroker import main_uds
 
 import logging
 log = logging.getLogger('occo.manager_service')
@@ -32,17 +34,20 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
     instructed to make a pass at given intervals.
 
     :param str infra_id: The identifier of the already submitted infrastructure.
-    :param dict ip_config: Configuration parameters for the Infrastructure
-        Processor. Its contents depend on the concrete type of InfraProcessor
-        used.
     :param float enactor_interval: The number of seconds to elapse between
         Enactor passes.
+    :param str process_strategy: The identifier of the processing strategy for
+        Infrastructure Processor
     """
 
-    def __init__(self, infra_id, ip_config, enactor_interval=10):
+    def __init__(   self, 
+                    infra_id,
+                    enactor_interval = 10,
+                    process_strategy='sequential'):
         super(InfrastructureMaintenanceProcess, self).__init__(target=self)
-        self.infra_id,  self.ip_config = infra_id, ip_config
+        self.infra_id = infra_id
         self.enactor_interval = enactor_interval
+        self.process_strategy = process_strategy
 
     def __call__(self):
         log.info('Starting maintenance process for %r', self.infra_id)
@@ -50,7 +55,9 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
         from occo.enactor import Enactor
         from occo.infraprocessor import InfraProcessor
 
-        infraprocessor = InfraProcessor.instantiate(**self.ip_config)
+        infraprocessor = InfraProcessor.instantiate(
+                                        protocol='basic',
+                                        process_strategy=self.process_strategy)
         enactor = Enactor(self.infra_id, infraprocessor)
         try:
             while True:
@@ -73,11 +80,11 @@ class InfrastructureManager(object):
     provisioned infrastructures. I.e., if the manager fails, it can be
     restarted and reattached to previously submitted infrastructures.
 
-    :param user_data_store: A reference to the UDS service.
-    :param ip_config: Configuration for the Infrastructure Processor instances.
+    :param str process_strategy: The identifier of the processing strategy for
+        Infrastructure Processor
     """
-    def __init__(self, user_data_store, ip_config):
-        self.ip_config, self.user_data_store = ip_config, user_data_store
+    def __init__(self, process_strategy = 'sequential'):
+        self.process_strategy = process_strategy
         self.process_table = dict()
 
     def add(self, infra_desc):
@@ -105,7 +112,7 @@ class InfrastructureManager(object):
 
         datalog.debug('Adding infrastructure:\n%r', infra_desc)
         compiled_infrastructure = StaticDescription(infra_desc)
-        self.user_data_store.add_infrastructure(compiled_infrastructure)
+        main_uds.add_infrastructure(compiled_infrastructure)
         infra_id = compiled_infrastructure.infra_id
         log.info("Submitted infrastructure: %r", infra_id)
         return infra_id
@@ -133,7 +140,8 @@ class InfrastructureManager(object):
             raise InfrastructureIDTakenException(infra_id)
 
         log.debug('Starting provisioning infrastructure %r', infra_id)
-        p = InfrastructureMaintenanceProcess(infra_id, self.ip_config)
+        p = InfrastructureMaintenanceProcess(   infra_id = infra_id, 
+                                                process_strategy = self.process_strategy)
         self.process_table[infra_id] = p
         log.info('Spawning maintenance process for %r', infra_id)
         p.start()
@@ -188,9 +196,6 @@ class InfrastructureManager(object):
         :param str infra_id: The identifier of the infrastructure.
         :raise ValueError: if the infrastructure is being maintained by this
             manager. Call :meth:`stop_provisioning` first, explicitly.
-
-        .. todo:: Maybe implicitly call :meth:`stop_provisioning` instead of
-            raising an error?
         """
 
         if infra_id in self.process_table:
@@ -201,7 +206,8 @@ class InfrastructureManager(object):
         log.debug('Tearing down infrastructure %r', infra_id)
 
         from occo.infraprocessor import InfraProcessor
-        ip = InfraProcessor.instantiate(**self.ip_config)
+        ip = InfraProcessor.instantiate(protocol='basic',
+                                        process_strategy=self.process_strategy)
 
         import occo.api.occoapp as occoapp
         occoapp.teardown(infra_id, ip)

@@ -106,7 +106,7 @@ if __name__ == '__main__':
         response = jsonify(dict(message=error.message))
         response.status_code = 500
         return response
-
+    
     @flask.route('/infrastructures/<infraid>/report', methods=['GET'])
     @mocked(mockinfrastatereport)
     def infra_state_report(infraid):
@@ -126,7 +126,7 @@ if __name__ == '__main__':
                 if infraid in manager.process_table:
                     manager.stop_provisioning(infraid)
                 manager.tear_down(infraid)
-                return jsonify(dict())
+                return jsonify(dict(infraid=infraid))
             else:
                 state = main_info_broker.get('infrastructure.state', infra_id=infraid)
                 return jsonify(state)
@@ -140,12 +140,12 @@ if __name__ == '__main__':
             raise RequestException(400, 'Empty POST data')
 
         try:
-            result = manager.add(infra_desc)
+            infraid = manager.add(infra_desc)
         except Exception as ex:
             log.exception('manager.add:')
             raise RequestException(400, str(ex))
         else:
-            return result
+            return jsonify(dict(infraid=infraid))
 
     @flask.route('/info/<key>', methods=['GET'])
     def info(key):

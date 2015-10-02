@@ -65,29 +65,35 @@ if __name__ == '__main__':
         state = main_info_broker.get('infrastructure.state_report', infraid)
         return jsonify(state)
 
-    @flask.route('/infrastructures/', methods=['GET', 'POST'])
-    @flask.route('/infrastructures/<infraid>', methods=['GET', 'DELETE'])
-    def submit_infrastructure(infraid=None):
+    @flask.route('/infrastructures/<infraid>', methods=['GET'])
+    def report_infrastructure(infraid):
         log.debug('Serving request %s infrastructures/%r',
                   request.method, infraid)
-        if infraid:
-            if request.method == 'DELETE':
-                if infraid in manager.process_table:
-                    manager.stop_provisioning(infraid)
-                manager.tear_down(infraid)
-                return jsonify(dict(infraid=infraid))
-            else:
-                state = main_info_broker.get('infrastructure.state', infra_id=infraid)
-                return jsonify(state)
+        state = main_info_broker.get('infrastructure.state', infra_id=infraid)
+        return jsonify(state)
 
-        if request.method == 'GET':
-            return jsonify(dict(infrastructures=manager.process_table.keys()))
+    @flask.route('/infrastructures/', methods=['GET'])
+    def list_infrastructures():
+        log.debug('Serving request: %s infrastructures',request.method)
+        return jsonify(dict(infrastructures=manager.process_table.keys()))
 
+    @flask.route('/infrastructures/<infraid>', methods=['DELETE'])
+    def delete_infrastructure(infraid):
+        log.debug('Serving request %s infrastructures/%r',
+                  request.method, infraid)
+        if infraid in manager.process_table:
+            manager.stop_provisioning(infraid)
+            manager.tear_down(infraid)
+        return jsonify(dict(infraid=infraid))
+
+    @flask.route('/infrastructures/', methods=['POST'])
+    def submit_infrastructure():
+        log.debug('Serving request %s infrastructures',
+                  request.method)
         infra_desc = request.stream.read()
         log.info('Submitting infrastructure:\n%s', util.yamldump(infra_desc))
         if not infra_desc:
             raise RequestException(400, 'Empty POST data')
-
         try:
             infraid = manager.add(infra_desc)
         except Exception as ex:

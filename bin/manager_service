@@ -11,8 +11,11 @@ Author: adam.visegradi@sztaki.mta.hu
 import occo.util as util
 import occo.api.occoapp as occoapp
 import occo.api.manager as manager
+
 from occo.infobroker import main_info_broker
+from occo.infobroker import main_uds
 from occo.exceptions import KeyNotFoundError, ArgumentError
+
 from flask import Flask, request, jsonify
 
 def setup_args(cfg):
@@ -33,6 +36,26 @@ class RequestException(Exception):
                     reason=self.reason,
                     message=str(self))
 
+def create_infra_report(infraid):
+    infrastate = main_info_broker.get('infrastructure.state', infra_id=infraid)
+    result = dict()
+    for nodename,instances in infrastate.iteritems():
+        nnd = dict()
+        instancevals = dict()
+        for nodeid,nivalue in instances.iteritems():
+            instancevals[nodeid] = dict((item,svalue) for item,svalue in
+                    nivalue.iteritems() if item in
+                    ['resource_address','state'])
+        nnd['instances'] = instancevals
+        nnd['count_now'] = len(instancevals)
+        target_count = int(util.coalesce(main_uds.get_scaling_target_count(infraid,nodename),
+                                            len(instancevals)))
+        target_count += len(main_uds.get_scaling_createnode(infraid,nodename))
+        target_count -= len(main_uds.get_scaling_destroynode(infraid,nodename))
+        nnd['count_target'] = target_count
+        result[nodename]=nnd
+    return result
+
 if __name__ == '__main__':
 
     occoapp.setup(setup_args)
@@ -43,6 +66,16 @@ if __name__ == '__main__':
     log = logging.getLogger('occo.manager-service')
 
     manager = manager.InfrastructureManager(process_strategy = occoapp.args.strategy)
+
+    def check_infraid_exists(infraid):
+        if not infraid in manager.process_table.keys():
+            raise RequestException(300, 'ERROR: invalid parameter(s)')
+
+    def check_nodename_exists(infraid,nodename):
+        check_infraid_exists(infraid)
+        if not nodename in main_info_broker.get('infrastructure.state',
+                infra_id=infraid):
+            raise RequestException(300, 'ERROR: invalid parameter(s)')
 
     @flask.errorhandler(RequestException)
     def handled_exception(error):
@@ -59,18 +92,13 @@ if __name__ == '__main__':
         return response
     
     @flask.route('/infrastructures/<infraid>/report', methods=['GET'])
-    def infra_state_report(infraid):
-        log.debug('Serving request %s infrastructures/%r/report',
-                  request.method, infraid)
-        state = main_info_broker.get('infrastructure.state_report', infraid)
-        return jsonify(state)
-
     @flask.route('/infrastructures/<infraid>', methods=['GET'])
     def report_infrastructure(infraid):
+        check_infraid_exists(infraid)
         log.debug('Serving request %s infrastructures/%r',
                   request.method, infraid)
-        state = main_info_broker.get('infrastructure.state', infra_id=infraid)
-        return jsonify(state)
+        result = create_infra_report(infraid)
+        return jsonify(result)
 
     @flask.route('/infrastructures/', methods=['GET'])
     def list_infrastructures():
@@ -79,12 +107,31 @@ if __name__ == '__main__':
 
     @flask.route('/infrastructures/<infraid>', methods=['DELETE'])
     def delete_infrastructure(infraid):
+        check_infraid_exists(infraid)
         log.debug('Serving request %s infrastructures/%r',
                   request.method, infraid)
         if infraid in manager.process_table:
             manager.stop_provisioning(infraid)
             manager.tear_down(infraid)
         return jsonify(dict(infraid=infraid))
+
+    @flask.route('/infrastructures/<infraid>/createnode/<nodename>', methods=['POST'])
+    def create_node(infraid, nodename):
+        check_nodename_exists(infraid,nodename)
+        main_uds.set_scaling_createnode(infraid, nodename)
+        clist = main_uds.get_scaling_createnode(infraid, nodename)
+        dlist = main_uds.get_scaling_destroynode(infraid, nodename)
+        return jsonify(dict(method='createnode', infraid=infraid,
+            nodename=nodename, create=clist, destroy=dlist))
+
+    @flask.route('/infrastructures/<infraid>/destroynode/<nodename>/<nodeid>', methods=['POST'])
+    def destroy_node(infraid, nodename, nodeid):
+        check_nodename_exists(infraid,nodename)
+        main_uds.set_scaling_destroynode(infraid, nodename, nodeid)
+        clist = main_uds.get_scaling_createnode(infraid, nodename)
+        dlist = main_uds.get_scaling_destroynode(infraid, nodename)
+        return jsonify(dict(method='destroynode', infraid=infraid,
+            nodename=nodename, nodeid=nodeid, create=clist, destroy=dlist))
 
     @flask.route('/infrastructures/', methods=['POST'])
     def submit_infrastructure():
@@ -129,3 +176,5 @@ if __name__ == '__main__':
         log.info('Ctrl+C - Exiting.')
         for i in manager.process_table.iterkeys():
             log.info('Infrastructure left running: %r', i)
+
+

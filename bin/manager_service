@@ -11,6 +11,7 @@ Author: adam.visegradi@sztaki.mta.hu
 import occo.util as util
 import occo.api.occoapp as occoapp
 import occo.api.manager as manager
+import occo.enactor.scaling as scaling
 
 from occo.infobroker import main_info_broker
 from occo.infobroker import main_uds
@@ -48,10 +49,7 @@ def create_infra_report(infraid):
                     ['resource_address','state'])
         nnd['instances'] = instancevals
         nnd['count_now'] = len(instancevals)
-        target_count = int(util.coalesce(main_uds.get_scaling_target_count(infraid,nodename),
-                                            len(instancevals)))
-        target_count += len(main_uds.get_scaling_createnode(infraid,nodename))
-        target_count -= len(main_uds.get_scaling_destroynode(infraid,nodename))
+        target_count = scaling.report_target_count(infrastate[nodename])
         nnd['count_target'] = target_count
         result[nodename]=nnd
     return result
@@ -114,24 +112,23 @@ if __name__ == '__main__':
             manager.stop_provisioning(infraid)
             manager.tear_down(infraid)
         return jsonify(dict(infraid=infraid))
-
+    
     @flask.route('/infrastructures/<infraid>/createnode/<nodename>', methods=['POST'])
     def create_node(infraid, nodename):
-        check_nodename_exists(infraid,nodename)
-        main_uds.set_scaling_createnode(infraid, nodename)
-        clist = main_uds.get_scaling_createnode(infraid, nodename)
-        dlist = main_uds.get_scaling_destroynode(infraid, nodename)
-        return jsonify(dict(method='createnode', infraid=infraid,
-            nodename=nodename, create=clist, destroy=dlist))
+        check_nodename_exists(infraid, nodename)
+        scaling.add_createnode_request(infraid, nodename)
+        return jsonify(dict(method='createnode', 
+                            infraid=infraid,
+                            nodename=nodename))
 
-    @flask.route('/infrastructures/<infraid>/destroynode/<nodename>/<nodeid>', methods=['POST'])
-    def destroy_node(infraid, nodename, nodeid):
-        check_nodename_exists(infraid,nodename)
-        main_uds.set_scaling_destroynode(infraid, nodename, nodeid)
-        clist = main_uds.get_scaling_createnode(infraid, nodename)
-        dlist = main_uds.get_scaling_destroynode(infraid, nodename)
-        return jsonify(dict(method='destroynode', infraid=infraid,
-            nodename=nodename, nodeid=nodeid, create=clist, destroy=dlist))
+    @flask.route('/infrastructures/<infraid>/dropnode/<nodename>/<nodeid>', methods=['POST'])
+    def drop_node(infraid, nodename, nodeid):
+        check_nodename_exists(infraid, nodename)
+        scaling.add_dropnode_request(infraid, nodename, nodeid)
+        return jsonify(dict(method='dropnode', 
+                            infraid=infraid,
+                            nodename=nodename,
+                            nodeid=nodeid))
 
     @flask.route('/infrastructures/', methods=['POST'])
     def submit_infrastructure():

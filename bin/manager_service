@@ -48,9 +48,7 @@ def create_infra_report(infraid):
                     nivalue.iteritems() if item in
                     ['resource_address','state'])
         nnd['instances'] = instancevals
-        nnd['count_now'] = len(instancevals)
-        target_count = scaling.report_target_count(infrastate[nodename])
-        nnd['count_target'] = target_count
+        nnd['scaling'] = scaling.report(infrastate[nodename])
         result[nodename]=nnd
     return result
 
@@ -114,16 +112,23 @@ if __name__ == '__main__':
         return jsonify(dict(infraid=infraid))
     
     @flask.route('/infrastructures/<infraid>/createnode/<nodename>', methods=['POST'])
-    def create_node(infraid, nodename):
+    @flask.route('/infrastructures/<infraid>/createnode/<nodename>/<count>', methods=['POST'])
+    def create_node(infraid, nodename, count = 1):
         check_nodename_exists(infraid, nodename)
-        scaling.add_createnode_request(infraid, nodename)
+        try:
+            count = int(count)
+        except ValueError:
+            raise RequestException(300, 'ERROR: invalid count!')
+        scaling.add_createnode_request(infraid, nodename, count)
         return jsonify(dict(method='createnode', 
                             infraid=infraid,
-                            nodename=nodename))
+                            nodename=nodename,
+                            count=count))
 
+    @flask.route('/infrastructures/<infraid>/dropnode/<nodename>', methods=['POST'])
     @flask.route('/infrastructures/<infraid>/dropnode/<nodename>/<nodeid>', methods=['POST'])
-    def drop_node(infraid, nodename, nodeid):
-        check_nodename_exists(infraid, nodename)
+    def drop_node(infraid, nodename, nodeid=None):
+        #check_nodename_exists(infraid, nodename)
         scaling.add_dropnode_request(infraid, nodename, nodeid)
         return jsonify(dict(method='dropnode', 
                             infraid=infraid,

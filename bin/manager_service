@@ -8,16 +8,8 @@ This script starts an infrastructure using OCCO.
 Author: adam.visegradi@sztaki.mta.hu
 """
 
-import occo.util as util
 import occo.api.occoapp as occoapp
-import occo.api.manager as manager
-import occo.enactor.scaling as scaling
-
-from occo.infobroker import main_info_broker
-from occo.infobroker import main_uds
-from occo.exceptions import KeyNotFoundError, ArgumentError
-
-from flask import Flask, request, jsonify
+import occo.api.rest as occorest
 
 def setup_args(cfg):
     cfg.add_argument('--host', type=str, default='127.0.0.1')
@@ -28,155 +20,18 @@ def setup_args(cfg):
                      help='Parallelize processing instructions')
     pass # TODO: reconnect to already submitted infrstructures
 
-class RequestException(Exception):
-    def __init__(self, status_code, reason, *args):
-        super(RequestException, self).__init__(*args)
-        self.status_code, self.reason = status_code, reason
-    def to_dict(self):
-        return dict(status_code=self.status_code,
-                    reason=self.reason,
-                    message=str(self))
-
-def create_infra_report(infraid):
-    infrastate = main_info_broker.get('infrastructure.state', infra_id=infraid)
-    result = dict()
-    for nodename,instances in infrastate.iteritems():
-        nnd = dict()
-        instancevals = dict()
-        for nodeid,nivalue in instances.iteritems():
-            instancevals[nodeid] = dict((item,svalue) for item,svalue in
-                    nivalue.iteritems() if item in
-                    ['resource_address','state'])
-        nnd['instances'] = instancevals
-        nnd['scaling'] = scaling.report(infrastate[nodename])
-        result[nodename]=nnd
-    return result
 
 if __name__ == '__main__':
 
     occoapp.setup(setup_args)
 
-    flask = Flask('occo_manager')
-
-    import logging
-    log = logging.getLogger('occo.manager-service')
-
-    manager = manager.InfrastructureManager(process_strategy = occoapp.args.strategy)
-
-    def check_infraid_exists(infraid):
-        if not infraid in manager.process_table.keys():
-            raise RequestException(300, 'ERROR: invalid parameter(s)')
-
-    def check_nodename_exists(infraid,nodename):
-        check_infraid_exists(infraid)
-        if not nodename in main_info_broker.get('infrastructure.state',
-                infra_id=infraid):
-            raise RequestException(300, 'ERROR: invalid parameter(s)')
-
-    @flask.errorhandler(RequestException)
-    def handled_exception(error):
-        log.error('An exception occured: %r', error)
-        print error.to_dict()
-        return jsonify(error.to_dict())
-    @flask.errorhandler(Exception)
-    def unhandled_exception(error):
-        import traceback as tb
-        log.error('An unhandled exception occured: %r\n%s',
-                  error, tb.format_exc(error))
-        response = jsonify(dict(message=error.message))
-        response.status_code = 500
-        return response
-    
-    @flask.route('/infrastructures/<infraid>/report', methods=['GET'])
-    @flask.route('/infrastructures/<infraid>', methods=['GET'])
-    def report_infrastructure(infraid):
-        check_infraid_exists(infraid)
-        log.debug('Serving request %s infrastructures/%r',
-                  request.method, infraid)
-        result = create_infra_report(infraid)
-        return jsonify(result)
-
-    @flask.route('/infrastructures/', methods=['GET'])
-    def list_infrastructures():
-        log.debug('Serving request: %s infrastructures',request.method)
-        return jsonify(dict(infrastructures=manager.process_table.keys()))
-
-    @flask.route('/infrastructures/<infraid>', methods=['DELETE'])
-    def delete_infrastructure(infraid):
-        check_infraid_exists(infraid)
-        log.debug('Serving request %s infrastructures/%r',
-                  request.method, infraid)
-        if infraid in manager.process_table:
-            manager.stop_provisioning(infraid)
-            manager.tear_down(infraid)
-        return jsonify(dict(infraid=infraid))
-    
-    @flask.route('/infrastructures/<infraid>/createnode/<nodename>', methods=['POST'])
-    @flask.route('/infrastructures/<infraid>/createnode/<nodename>/<count>', methods=['POST'])
-    def create_node(infraid, nodename, count = 1):
-        check_nodename_exists(infraid, nodename)
-        try:
-            count = int(count)
-        except ValueError:
-            raise RequestException(300, 'ERROR: invalid count!')
-        scaling.add_createnode_request(infraid, nodename, count)
-        return jsonify(dict(method='createnode', 
-                            infraid=infraid,
-                            nodename=nodename,
-                            count=count))
-
-    @flask.route('/infrastructures/<infraid>/dropnode/<nodename>', methods=['POST'])
-    @flask.route('/infrastructures/<infraid>/dropnode/<nodename>/<nodeid>', methods=['POST'])
-    def drop_node(infraid, nodename, nodeid=None):
-        #check_nodename_exists(infraid, nodename)
-        scaling.add_dropnode_request(infraid, nodename, nodeid)
-        return jsonify(dict(method='dropnode', 
-                            infraid=infraid,
-                            nodename=nodename,
-                            nodeid=nodeid))
-
-    @flask.route('/infrastructures/', methods=['POST'])
-    def submit_infrastructure():
-        log.debug('Serving request %s infrastructures',
-                  request.method)
-        infra_desc = request.stream.read()
-        log.info('Submitting infrastructure:\n%s', util.yamldump(infra_desc))
-        if not infra_desc:
-            raise RequestException(400, 'Empty POST data')
-        try:
-            infraid = manager.add(infra_desc)
-        except Exception as ex:
-            log.exception('manager.add:')
-            raise RequestException(400, str(ex))
-        else:
-            return jsonify(dict(infraid=infraid))
-
-    @flask.route('/info/<key>', methods=['GET'])
-    def info(key):
-        params=dict((k, v) for k, v in request.args.items())
-        log.debug('Serving request %s info/%s with params: %s', request.method, key, str(params))
-        try:
-            return jsonify({"result": main_info_broker.get(key, **params) })
-        except ArgumentError as e:
-            log.info('InfoRouter: ArgumentError: %s', str(e))
-            raise RequestException(400, 'Invalid parameter value for key "{0}"'.format(key), str(e))
-        except KeyNotFoundError as e:
-            log.info('InfoRouter: KeyNotFound: %s', str(e))
-            raise RequestException(404, 'Key not found: "{0}"'.format(key), str(e))
-        except Exception as e:
-            log.info('InfoRouter: Exception: %s', str(e))
-            log.exception('main_info_broker.get:')
-            raise RequestException(404, str(e), 'Request cannot be served.')
+    occorest.init(occoapp.args.strategy)    
 
     try:
-        flask.run(host=occoapp.args.host,
-                  port=occoapp.args.port)
+        occorest.app.run( host=occoapp.args.host, port=occoapp.args.port)
         # TODO: Expose the manager through Flask
         # TODO: Expose InfoBroker
 
     except KeyboardInterrupt:
-        log.info('Ctrl+C - Exiting.')
-        for i in manager.process_table.iterkeys():
-            log.info('Infrastructure left running: %r', i)
-
+        occorest.keyboardInterrupt()
 

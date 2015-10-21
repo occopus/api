@@ -3,8 +3,13 @@
 # Copyright (C) 2015 MTA SZTAKI
 
 """
-This script stops a single node using OCCO-CloudHandler and
+Infrastop
+~~~~~~~~~
+
+This script tears down an infrastructure using OCCO-CloudHandler and
 OCCO-InfraProcessor.
+
+An infra_id is required.
 
 Author: adam.visegradi@sztaki.mta.hu
 """

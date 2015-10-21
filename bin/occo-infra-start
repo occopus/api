@@ -3,7 +3,14 @@
 # Copyright (C) 2015 MTA SZTAKI
 
 """
-This script starts an infrastructure using OCCO.
+Infrastart
+~~~~~~~~~~
+
+This script starts an infrastructure using OCCO. Requires a configuration file as a parameter, and builds the corresponding infrastructure using an Enactor + InfraProcessor pair. Returns the infra_id, and also stores it in the Information Broker.
+
+On error during creating the infrastructure it rolls back everything to the initial state. The user can also stop the process manually by executing a SIGINT (Ctrl + C). The resources will be rolled back in this case as well.
+
+The script provides no lifecycle-management, as it detaches from the infrastructure after building it.
 
 Author: adam.visegradi@sztaki.mta.hu
 """

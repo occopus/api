@@ -92,7 +92,7 @@ def submit_infrastructure():
 
     Requires an :ref:`infrastructure description <infradescription>` as POST data.
 
-    Return type:
+    :return type:
         .. code::
 
             {
@@ -123,7 +123,7 @@ def report_infrastructure(infraid):
 
     :param infraid: The identifier of the infrastructure. 
 
-    Return type:
+    :return type:
         .. code::
 
             {
@@ -155,7 +155,7 @@ def report_infrastructure(infraid):
 def list_infrastructures():
     """List the identifier of infrastructures currently maintained by the service.
 
-    Return type:
+    :return type:
         .. code::
 
             {
@@ -175,7 +175,7 @@ def delete_infrastructure(infraid):
 
     :param infraid: The identifier of the infrastructure. 
 
-    Return type:
+    :return type:
         .. code::
 
             {
@@ -191,93 +191,95 @@ def delete_infrastructure(infraid):
         manager.tear_down(infraid)
     return jsonify(dict(infraid=infraid))
     
-@app.route('/infrastructures/<infraid>/createnode/<nodename>', methods=['POST'])
+@app.route('/infrastructures/<infraid>/scaleup/<nodename>', methods=['POST'])
 def create_node_nocount(infraid, nodename):
-    """Create one instance of a node in an infrastructure.
+    """Scales up a node in an infrastructure by creating a new instance of the
+    node.
 
     :param infraid: The identifier of the infrastructure.
     :param nodename: The name of the node to be scaled up.
 
-    Return type:
+    :return type:
         .. code::
 
             {
                 "count": 1,
                 "infraid": "<infraid>",
-                "method": "createnode",
+                "method": "scaleup",
                 "nodename": "<nodename>"
             }
 
     """
     return create_node(infraid, nodename, count = 1)
 
-@app.route('/infrastructures/<infraid>/createnode/<nodename>/<int:count>', methods=['POST'])
+@app.route('/infrastructures/<infraid>/scaleup/<nodename>/<int:count>', methods=['POST'])
 def create_node(infraid, nodename, count = 1):
-    """Create given number of instance(s) of a node in an infrastructure.
+    """Scales up a node in an infrastructure by creating the specified number of
+    instances of the node.
 
     :param infraid: The identifier of the infrastructure. 
     :param nodename: The name of the node to be scaled up. 
     :param count: The number of instances to be created. 
 
-    Return type:
+    :return type:
         .. code::
 
             {
                 "count": <count>,
                 "infraid": "<infraid>",
-                "method": "createnode",
+                "method": "scaleup",
                 "nodename": "<nodename>"
             }
     """
     check_nodename_exists(infraid, nodename)
     scaling.add_createnode_request(infraid, nodename, count)
-    return jsonify(dict(method='createnode', 
+    return jsonify(dict(method='scaleup', 
                         infraid=infraid,
                         nodename=nodename,
                         count=count))
 
-@app.route('/infrastructures/<infraid>/dropnode/<nodename>', methods=['POST'])
+@app.route('/infrastructures/<infraid>/scaledown/<nodename>', methods=['POST'])
 def drop_node_noselect(infraid, nodename):
-    """Destroy an instance of node in an infrastructure. The instance to be
+    """Scales down a node by destroying one of its instances in the infrastructure. The instance to be
     destroyed is automatically selected by OCCO based on its configured DownScale
     strategy.
 
     :param infraid: The identifier of the infrastructure.
-    :param nodename: The name of the node from which an instance to be destroyed.
+    :param nodename: The name of the node to be scaled down.
 
-    Return type:
+    :return type:
         .. code::
 
             {
                 "infraid": "<infraid>",
-                "method": "dropnode",
+                "method": "scaledown",
                 "nodeid": null,
                 "nodename": "<nodename>"
             }
     """
     return drop_node(infraid, nodename, None)
 
-@app.route('/infrastructures/<infraid>/dropnode/<nodename>/<nodeid>', methods=['POST'])
+@app.route('/infrastructures/<infraid>/scaledown/<nodename>/<nodeid>', methods=['POST'])
 def drop_node(infraid, nodename, nodeid):
-    """Destroy a specified instance of node in an infrastructure.
+    """Scales down a node in an infrastructure by destroying one of its instances specified.
 
     :param infraid: The identifier of the infrastructure. 
-    :param nodename: The name of the node from which an instance to be destroyed. 
-    :param nodeid: The identifier of the instance to be destroyed. 
+    :param nodename: The name of the node which is to be scaled down. 
+    :param nodeid: The identifier of the selected instance. 
 
-    Return type:
+    :return type:
         .. code::
 
             {
                 "infraid": "<infraid>",
-                "method": "dropnode",
+                "method": "scaledown",
                 "nodeid": "<nodeid>"
                 "nodename": "<nodename>"
             }
     """
     check_nodename_exists(infraid, nodename)
     scaling.add_dropnode_request(infraid, nodename, nodeid)
-    return jsonify(dict(method='dropnode', 
+    return jsonify(dict(method='scaledown', 
                         infraid=infraid,
                         nodename=nodename,
                         nodeid=nodeid))

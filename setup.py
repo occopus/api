@@ -19,7 +19,7 @@ setuptools.setup(
         'bin/occo-infra-stop',
         'bin/occo-manager-service',
         'bin/occo-get-ibkeys',
-        'bin/redisload',
+        'bin/occo-import-node',
     ],
     url='http://www.lpds.sztaki.hu/',
     license='LICENSE.txt',

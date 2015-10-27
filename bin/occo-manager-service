@@ -28,7 +28,7 @@ if __name__ == '__main__':
     occorest.init(occoapp.args.strategy)    
 
     try:
-        occorest.app.run( host=occoapp.args.host, port=occoapp.args.port)
+        occorest.app.run( debug=True, host=occoapp.args.host, port=occoapp.args.port)
         # TODO: Expose the manager through Flask
         # TODO: Expose InfoBroker
 

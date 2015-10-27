@@ -1,6 +1,6 @@
 
 """
-This is the REST interface of manager_service tool.
+This is the REST interface of occo-manager-service tool.
 
 Author: jozsef.kovacs@sztaki.mta.hu
 """
@@ -62,7 +62,7 @@ def create_infra_report(infraid):
 @app.errorhandler(RequestException)
 def handled_exception(error):
     log.error('An exception occured: %r', error)
-    print error.to_dict()
+    #print error.to_dict()
     return jsonify(error.to_dict())
 
 @app.errorhandler(Exception)
@@ -101,7 +101,7 @@ def submit_infrastructure():
 
     Example::
     
-        curl -X POST http://127.0.0.1:5000/infrastructures --data-binary @my_infrastructure_description.yaml
+        curl -X POST http://127.0.0.1:5000/infrastructures/ --data-binary @my_infrastructure_description.yaml
     """
     log.debug('Serving request %s infrastructures',
                 request.method)

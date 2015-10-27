@@ -28,10 +28,14 @@ setuptools.setup(
     install_requires=[
         'Flask',
         'PyYAML',
-        'OCCO-Compiler',
-        'OCCO-Enactor',
-        'OCCO-InfoBroker',
-        'OCCO-InfraProcessor',
+        'PyYAML',
+        'Jinja2',
         'OCCO-Util',
+        'OCCO-CloudHandler',
+        'OCCO-ServiceComposer',
+        'OCCO-InfoBroker',
+        'OCCO-Enactor',
+        'OCCO-Compiler',
+        'OCCO-InfraProcessor'
     ]
 )

@@ -18,9 +18,9 @@ from pip.req import parse_requirements
 
 setuptools.setup(
     name='OCCO-API',
-    version='0.1.0',
-    author='Adam Visegradi',
-    author_email='adam.visegradi@sztaki.mta.hu',
+    version='0.2.0',
+    author='MTA SZTAKI',
+    author_email='occopus@lpds.sztaki.hu',
     namespace_packages=[
         'occo',
     ],
@@ -34,9 +34,9 @@ setuptools.setup(
         'bin/occo-get-ibkeys',
         'bin/occo-import-node',
     ],
-    url='http://www.lpds.sztaki.hu/',
+    url='https://github.com/occopus',
     license='LICENSE.txt',
-    description='OCCO API',
+    description='Occopus API',
     long_description=open('README.txt').read(),
     install_requires=[
         'Flask',

@@ -1,0 +1,96 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+Infrastart
+~~~~~~~~~~
+
+This script starts an infrastructure using OCCO. Requires a configuration file as a parameter, and builds the corresponding infrastructure using an Enactor + InfraProcessor pair. Returns the infra_id, and also stores it in the Information Broker.
+
+On error during creating the infrastructure it rolls back everything to the initial state. The user can also stop the process manually by executing a SIGINT (Ctrl + C). The resources will be rolled back in this case as well.
+
+The script provides no lifecycle-management, as it detaches from the infrastructure after building it.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.api.occoapp as occoapp
+import occo.util as util
+import occo.infobroker as ib
+
+def setup_args(cfg):
+    cfg.add_argument('infra_def', type=occoapp.yaml_file)
+    cfg.add_argument('--parallelize',
+                     action='store_const', dest='strategy',
+                     const='parallel', default='sequential',
+                     help='Parallelize processing instructions')
+    cfg.add_argument('--listips', action='store_true', default=False,
+                    help='Lists nodes with ip addresses')
+
+def submit_infrastructure(infra_description):
+    from occo.compiler import StaticDescription
+    from occo.enactor import Enactor
+    from occo.infraprocessor import InfraProcessor
+    # This will not be needed when the Enactor starts using the main_info_broker
+    from occo.infobroker import main_info_broker
+
+    compiled_infrastructure = StaticDescription(infra_description)
+    ib.main_uds.add_infrastructure(compiled_infrastructure)
+
+    infraprocessor = InfraProcessor.instantiate(
+                                    protocol='basic',
+                                    process_strategy=occoapp.args.strategy)
+    enactor = Enactor(compiled_infrastructure.infra_id, infraprocessor)
+    return compiled_infrastructure.infra_id, infraprocessor, enactor
+
+if __name__ == '__main__':
+
+    occoapp.setup(setup_args)
+
+    import logging
+    log = logging.getLogger('occo')
+    datalog = logging.getLogger('occo.data')
+
+    infra_description = occoapp.args.infra_def
+    log.debug('Infrastructure description:\n%r', infra_description)
+
+    infraid, ip, enactor = submit_infrastructure(infra_description)
+
+    log.info('Submitted infrastructure: %r', infraid)
+
+    try:
+        enactor.make_a_pass()
+    except KeyboardInterrupt:
+        log.info('Ctrl+C - Destroying infrastructure and exiting.')
+        occoapp.killall(infraid, ip)
+        log.info('Cancelled starting infrastructure (Ctrl+C); the partially'
+                 ' built infrastructure has been torn down.')
+    except Exception:
+        log.error('Error occured, tearing down the infrastructure')
+        try:
+            occoapp.killall(infraid, ip)
+        except:
+            log.exception(
+                'IGNORING exception while tearing down infrastructure:')
+        log.exception('An error occured while building the infrastructure:')
+        log.error('An unrecoverable error occured; the partially built '
+                  'infrastructure has been torn down.')
+        exit(1)
+    else:
+        import yaml
+        from occo.infobroker import main_info_broker
+
+        state = main_info_broker.get('infrastructure.state', infraid)
+        log.info('Submitted infrastructure: %r', infraid)
+        datalog.debug('Submitted infrastructure dynamic state:\n%s',
+                 yaml.dump(state,default_flow_style=False))
+
+        if occoapp.args.listips:
+            log.info('List of ip addresses:')
+            for nodename in state:
+                log.info('%s:',nodename)
+                for node in state[nodename]:
+                    log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
+        
+        print infraid

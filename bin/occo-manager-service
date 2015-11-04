@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+This script starts an infrastructure using OCCO.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.api.occoapp as occoapp
+import occo.api.rest as occorest
+
+def setup_args(cfg):
+    cfg.add_argument('--host', type=str, default='127.0.0.1')
+    cfg.add_argument('--port', type=int, default=5000)
+    cfg.add_argument('--parallelize',
+                     action='store_const', dest='strategy',
+                     const='parallel', default='sequential',
+                     help='Parallelize processing instructions')
+    pass # TODO: reconnect to already submitted infrstructures
+
+
+if __name__ == '__main__':
+
+    occoapp.setup(setup_args)
+
+    occorest.init(occoapp.args.strategy)    
+
+    try:
+        occorest.app.run( debug=True, host=occoapp.args.host, port=occoapp.args.port)
+        # TODO: Expose the manager through Flask
+        # TODO: Expose InfoBroker
+
+    except KeyboardInterrupt:
+        occorest.keyboardInterrupt()
+

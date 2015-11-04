@@ -1,0 +1,24 @@
+common_config:
+    lpds_boto: &lpds_boto
+        protocol: boto
+        name: LPDS
+        dry_run: false
+        target:
+            endpoint: http://cfe2.lpds.sztaki.hu:4567
+            regionname: ROOT
+        auth_data:
+            username: dummy
+            password: dummy
+
+cloudhandler: !CloudHandler &ch
+    <<: *lpds_boto
+uds: !UDS &uds
+    protocol: redis
+    altdbs:
+        node_def: 1
+        infra: 10
+servicecomposer: !ServiceComposer &sc
+    protocol: dummy
+
+infobroker: !InfoProviderEcho
+    main_info_broker: true

@@ -1,1 +1,10 @@
-v0.1.0 -- Initial release
+
+v0.2.0 - November 2015
+- Implement basic API calls
+- Add logging and configuration
+- Implement Process Manager
+- Implement parallelized strategy for performing instructions
+- Implement scripts (occo-infra-start, occo-infra-stop
+- Add occo-manager-service with REST API
+- Add manual scalup, scaledown functions
+

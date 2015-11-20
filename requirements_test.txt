@@ -1,7 +1,7 @@
 --find-links http://pip.lpds.sztaki.hu/packages
 --no-index
 
-argparse==1.2.1
+argparse>=1.2.1
 boto==2.34.0
 dateutils==0.6.6
 Flask==0.10.1

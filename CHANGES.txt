@@ -1,4 +1,7 @@
 
+v0.3.0 - Januar 2016
+- Minor dependecy fixups
+
 v0.2.0 - November 2015
 - Implement basic API calls
 - Add logging and configuration

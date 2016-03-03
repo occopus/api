@@ -4,7 +4,7 @@ MySQL-python
 PyChef
 PyYAML
 OCCO-Util
-OCCO-CloudHandler
+OCCO-ResourceHandler
 OCCO-ServiceComposer
 OCCO-InfoBroker
 OCCO-Enactor

@@ -76,14 +76,14 @@ def setup(setup_args=None, cfg_path=None):
 
             The components of the OCCO architecture that's need to be built.
 
-                ``cloudhandler``
+                ``resourcehandler``
 
-                    *The* ``CloudHandler`` instance (singleton) to be used by
+                    *The* ``ResourceHandler`` instance (singleton) to be used by
                     other components (e.g. the
                     :class:`~occo.infraprocessor.InfraProcessor`. Multiple
                     backends can be supported by using a basic
-                    :class:`occo.cloudhandler.CloudHandler` instance here
-                    configured with multiple backend clouds.
+                    :class:`occo.resourcehandler.ResourceHandler` instance here
+                    configured with multiple backend clouds/resources.
 
                 ``servicecomposer``
 
@@ -91,7 +91,7 @@ def setup(setup_args=None, cfg_path=None):
                     by other components (e.g. the
                     :class:`~occo.infraprocessor.InfraProcessor`. Multiple
                     backends can be supported by using a basic
-                    :class:`occo.cloudhandler.ServiceComposer` instance here
+                    :class:`occo.resourcehandler.ServiceComposer` instance here
                     configured with multiple backend service composers [#f1]_.
 
                 ``uds``
@@ -127,7 +127,7 @@ def setup(setup_args=None, cfg_path=None):
 
         ib.real_main_info_broker = occo_infra['infobroker']
         ib.real_main_uds = occo_infra['uds']
-        ib.real_main_cloudhandler = occo_infra['cloudhandler']
+        ib.real_main_resourcehandler = occo_infra['resourcehandler']
         ib.real_main_servicecomposer = occo_infra['servicecomposer']
 
         util.global_dry_run_set(util.coalesce(occo_infra.get('dry_run'), False))

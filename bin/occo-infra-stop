@@ -6,7 +6,7 @@
 Infrastop
 ~~~~~~~~~
 
-This script tears down an infrastructure using OCCO-CloudHandler and
+This script tears down an infrastructure using OCCO-ResourceHandler and
 OCCO-InfraProcessor.
 
 An infra_id is required.

@@ -30,6 +30,6 @@ wsgiref==0.1.2
 -e ../compiler
 -e ../enactor
 -e ../infra-processor
--e ../cloud-handler
+-e ../resource-handler
 -e ../service-composer
 -e .

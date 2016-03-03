@@ -8,8 +8,8 @@ ctl_mqconfig: &CTL_MQCFG
     <<: *MQCFG
     queue: remote_infobroker_test_ctl
     routing_key: remote_infobroker_test_ctl
-clouds:
-    dummy_cloud_instance0: !CloudHandler
+resources:
+    dummy_cloud_instance0: !ResourceHandler
         protocol: dummy
         target:
             url: https://example.org/
@@ -21,7 +21,7 @@ clouds:
                 test: 1
                 testt: 2
     boto_lpds_cloud_instance:
-        protocol: boto
+        protocol: ec2
         name: LPDS-Cloud
         dry_run: false
         target:

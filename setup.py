@@ -44,7 +44,7 @@ setuptools.setup(
         'PyYAML',
         'Jinja2',
         'OCCO-Util',
-        'OCCO-CloudHandler',
+        'OCCO-ResourceHandler',
         'OCCO-ServiceComposer',
         'OCCO-InfoBroker',
         'OCCO-Enactor',

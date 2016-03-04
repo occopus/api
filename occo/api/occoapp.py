@@ -85,13 +85,13 @@ def setup(setup_args=None, cfg_path=None):
                     :class:`occo.resourcehandler.ResourceHandler` instance here
                     configured with multiple backend clouds/resources.
 
-                ``servicecomposer``
+                ``configmanager``
 
-                    *The* ``ServiceComposer`` instance (singleton) to be used
+                    *The* ``ConfigManager`` instance (singleton) to be used
                     by other components (e.g. the
                     :class:`~occo.infraprocessor.InfraProcessor`. Multiple
                     backends can be supported by using a basic
-                    :class:`occo.resourcehandler.ServiceComposer` instance here
+                    :class:`occo.resourcehandler.ConfigManager` instance here
                     configured with multiple backend service composers [#f1]_.
 
                 ``uds``
@@ -128,7 +128,7 @@ def setup(setup_args=None, cfg_path=None):
         ib.real_main_info_broker = occo_infra['infobroker']
         ib.real_main_uds = occo_infra['uds']
         ib.real_main_resourcehandler = occo_infra['resourcehandler']
-        ib.real_main_servicecomposer = occo_infra['servicecomposer']
+        ib.real_main_configmanager = occo_infra['configmanager']
 
         util.global_dry_run_set(util.coalesce(occo_infra.get('dry_run'), False))
 

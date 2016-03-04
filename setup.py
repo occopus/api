@@ -45,7 +45,7 @@ setuptools.setup(
         'Jinja2',
         'OCCO-Util',
         'OCCO-ResourceHandler',
-        'OCCO-ServiceComposer',
+        'OCCO-ConfigManager',
         'OCCO-InfoBroker',
         'OCCO-Enactor',
         'OCCO-Compiler',

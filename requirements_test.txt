@@ -31,5 +31,5 @@ wsgiref==0.1.2
 -e ../enactor
 -e ../infra-processor
 -e ../resource-handler
--e ../service-composer
+-e ../config-manager
 -e .

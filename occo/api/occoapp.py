@@ -47,7 +47,7 @@ configuration = None
 infrastructure = None
 """The OCCO infrastructure defined in the configuration."""
 
-def setup(setup_args=None, cfg_path=None):
+def setup(setup_args=None, cfg_path=None, auth_data_path=None):
     """
     Build an OCCO application from configuration.
 
@@ -110,7 +110,7 @@ def setup(setup_args=None, cfg_path=None):
     import logging
     import os
 
-    cfg = config.config(setup_args=setup_args, cfg_path=cfg_path)
+    cfg = config.config(setup_args=setup_args, cfg_path=cfg_path, auth_data_path=auth_data_path)
 
     log = logging.getLogger('occo')
     log.info('Starting up; PID = %d', os.getpid())
@@ -130,6 +130,7 @@ def setup(setup_args=None, cfg_path=None):
         ib.real_main_resourcehandler = occo_infra['resourcehandler']
         ib.real_main_configmanager = occo_infra['configmanager']
 
+        ib.configured_auth_data_path = cfg.auth_data_path
         util.global_dry_run_set(util.coalesce(occo_infra.get('dry_run'), False))
 
     except KeyError as ex:

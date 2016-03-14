@@ -29,8 +29,6 @@ if __name__ == '__main__':
     log = logging.getLogger('occo')
     datalog = logging.getLogger('occo.data')
 
-    log.debug('Configuration:\n%r', occoapp.configuration)
-
     log.info('Infrastructure ID supplied (%s), '
             'loading infrastructure state',
             occoapp.args.infraid)

@@ -3,6 +3,8 @@ Jinja2
 MySQL-python
 PyChef
 PyYAML
+python-fuelclient
+python-novaclient
 OCCO-Util
 OCCO-ResourceHandler
 OCCO-ConfigManager

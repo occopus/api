@@ -30,6 +30,7 @@ setuptools.setup(
     scripts=[
         'bin/occo-infra-start',
         'bin/occo-infra-stop',
+        'bin/occo-infra-manage',
         'bin/occo-manager-service',
         'bin/occo-get-ibkeys',
         'bin/occo-import-node',

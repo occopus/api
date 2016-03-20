@@ -31,6 +31,7 @@ setuptools.setup(
         'bin/occo-infra-start',
         'bin/occo-infra-stop',
         'bin/occo-infra-manage',
+        'bin/occo-infra-scale',
         'bin/occo-manager-service',
         'bin/occo-get-ibkeys',
         'bin/occo-import-node',

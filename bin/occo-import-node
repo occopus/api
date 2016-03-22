@@ -41,5 +41,5 @@ if __name__ == '__main__':
         print "[SCHEMA] Schema-checking completed, no errors found"
         for key, value in data.iteritems():
             kvs[key] = value
-        print "Importing nodes: DONE
+        print "Importing nodes: DONE"
         

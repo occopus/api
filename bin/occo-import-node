@@ -31,5 +31,15 @@ if __name__ == '__main__':
     kvs = redis_data['kvs']
     data = config.yaml_load_file(cfg.datafile)
 
-    for key, value in data.iteritems():
-        kvs[key] = value
+    from occo.compiler.schema_check import SchemaChecker
+    from occo.exceptions import SchemaError
+    try:
+        SchemaChecker.check_node_def(data)
+    except SchemaError as e:
+        print e.context + e.msg
+    else:
+        print "[SCHEMA] Schema-checking completed, no errors found"
+        for key, value in data.iteritems():
+            kvs[key] = value
+        print "Importing nodes: DONE"
+        

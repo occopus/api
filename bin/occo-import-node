@@ -38,8 +38,7 @@ if __name__ == '__main__':
     except SchemaError as e:
         print e.context + e.msg
     else:
-        print "[SCHEMA] Schema-checking completed, no errors found"
         for key, value in data.iteritems():
             kvs[key] = value
-        print "Importing nodes: DONE"
+        print "Successfully imported nodes: "+", ".join([key.split(':')[1] for key in data.keys()])
         

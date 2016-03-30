@@ -18,9 +18,11 @@ import occo.api.occoapp as occoapp
 import yaml
 
 def setup_args(cfg):
-    cfg.add_argument('-i','--infraid', dest='infraid', required=True)
-    cfg.add_argument('-n','--node', dest='node', required=True)
-    cfg.add_argument('-c','--count', dest='count', type=int, required=True)
+    cfg.add_argument('-i','--infraid', dest='infraid', required=True,
+                     help='identifier of infrastructure to scale')
+    cfg.add_argument('-n','--node', dest='node', required=True,
+                     help='name of node to scale')
+    cfg.add_argument('-c','--count', dest='count', type=int, required=True,                     help='positive/negative number expressing the direction and magnitude of scaling')
 
 if __name__ == '__main__':
 

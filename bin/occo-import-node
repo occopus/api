@@ -8,8 +8,8 @@ if __name__ == '__main__':
     import os
 
     cfg = config.DefaultConfig(dict())
-    cfg.add_argument('--redisconf')
-    cfg.add_argument('datafile')
+    cfg.add_argument('--redisconf',help='path to redis configuration file')
+    cfg.add_argument('datafile', help='node definition to import')
     cfg.parse_args()
 
     import occo.infobroker.kvstore

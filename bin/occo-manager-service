@@ -12,12 +12,14 @@ import occo.api.occoapp as occoapp
 import occo.api.rest as occorest
 
 def setup_args(cfg):
-    cfg.add_argument('--host', type=str, default='127.0.0.1')
-    cfg.add_argument('--port', type=int, default=5000)
+    cfg.add_argument('--host', type=str, default='127.0.0.1',
+                     help='host to bind service')
+    cfg.add_argument('--port', type=int, default=5000,
+                     help='port to bind service')
     cfg.add_argument('--parallelize',
                      action='store_const', dest='strategy',
                      const='parallel', default='sequential',
-                     help='Parallelize processing instructions')
+                     help='parallelize processing instructions')
     pass # TODO: reconnect to already submitted infrstructures
 
 

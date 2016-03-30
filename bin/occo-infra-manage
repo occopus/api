@@ -18,12 +18,24 @@ import occo.api.occoapp as occoapp
 import occo.infobroker as ib
 import yaml
 import time
+import occo.util as util
 
 def setup_args(cfg):
-    cfg.add_argument('-i','--infraid' , dest='infraid', required=True)
-    cfg.add_argument('-t','--interval', dest='interval', type=float, default=10)
-    cfg.add_argument('-c','--cyclic'  , dest='cyclic', action='store_true')
-    cfg.add_argument('-r','--report'  , dest='report', action='store_true')
+    cfg.add_argument('-i','--infraid' , 
+                     dest='infraid', 
+                     help='identifier of infrastructure to manage')
+    cfg.add_argument('-l','--list'    , 
+                     dest='list'  , action='store_true',
+                     help='lists active infrastructures')
+    cfg.add_argument('-t','--interval', 
+                     dest='interval', type=float, default=10,
+                     help='specifies the time between management sessions')
+    cfg.add_argument('-c','--cyclic'  , 
+                     dest='cyclic', action='store_true',
+                     help='performs continuous management')
+    cfg.add_argument('-r','--report', 
+                     dest='report', action='store_true',
+                     help='reports about infrastructure')
 
 if __name__ == '__main__':
 
@@ -32,6 +44,13 @@ if __name__ == '__main__':
     import logging
     log = logging.getLogger('occo')
     datalog = logging.getLogger('occo.data')
+
+    if not occoapp.args.infraid:
+        if occoapp.args.list:
+            print "List of active infrastructures:"
+            for i in util.Infralist().get():
+                print i
+        exit(0)
 
     from occo.infraprocessor import InfraProcessor
     from occo.enactor import Enactor

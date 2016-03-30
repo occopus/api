@@ -113,7 +113,6 @@ def setup(setup_args=None, cfg_path=None, auth_data_path=None):
     cfg = config.config(setup_args=setup_args, cfg_path=cfg_path, auth_data_path=auth_data_path)
 
     log = logging.getLogger('occo')
-    log.info('Starting up; PID = %d', os.getpid())
 
     # This is shorter and faster than setting all variables through
     # `globals()`, and much shorter than listing all variables as "global"

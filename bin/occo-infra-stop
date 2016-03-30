@@ -16,10 +16,12 @@ Author: adam.visegradi@sztaki.mta.hu
 
 import occo.api.occoapp as occoapp
 import occo.infobroker as ib
+import occo.util as util
 import yaml
 
 def setup_args(cfg):
-    cfg.add_argument('-i', dest='infraid', required=True)
+    cfg.add_argument('-i', dest='infraid', required=True,
+                     help='identifier of infrastructure to destroy')
 
 if __name__ == '__main__':
 
@@ -33,3 +35,4 @@ if __name__ == '__main__':
     ip = InfraProcessor.instantiate(protocol='basic')
 
     occoapp.killall(occoapp.args.infraid, ip)
+    util.Infralist().remove(occoapp.args.infraid)

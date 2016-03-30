@@ -33,7 +33,6 @@ setuptools.setup(
         'bin/occo-infra-manage',
         'bin/occo-infra-scale',
         'bin/occo-manager-service',
-        'bin/occo-get-ibkeys',
         'bin/occo-import-node',
     ],
     url='https://github.com/occopus',

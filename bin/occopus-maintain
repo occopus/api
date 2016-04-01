@@ -47,10 +47,16 @@ if __name__ == '__main__':
 
     if not occoapp.args.infraid:
         if occoapp.args.list:
-            print "List of active infrastructures:"
+            if not util.Infralist().get():
+                print "No active infrastructure!"
+            else:
+                print "List of active infrastructure:"
             for i in util.Infralist().get():
                 print i
-        exit(0)
+            exit(0)
+        else:
+           print "ERROR: No infra_id (-i) specified! "
+           exit(1)
 
     from occo.infraprocessor import InfraProcessor
     from occo.enactor import Enactor

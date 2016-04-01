@@ -30,7 +30,7 @@ setuptools.setup(
     scripts=[
         'bin/occopus-build',
         'bin/occopus-destroy',
-        'bin/occopus-manage',
+        'bin/occopus-maintain',
         'bin/occopus-scale',
         'bin/occopus-rest-service',
         'bin/occopus-import',

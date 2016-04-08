@@ -1,35 +1,60 @@
 --find-links http://pip.lpds.sztaki.hu/packages
 --no-index
 
-argparse>=1.2.1
+Babel==2.2.0
 backports.ssl-match-hostname==3.5.0.1
 boto==2.34.0
 dateutils==0.6.6
+debtcollector==1.3.0
 docker-py==1.6.0
 Flask==0.10.1
+funcsigs==0.4
+iso8601==0.1.10
 itsdangerous==0.24
 Jinja2==2.7.3
+keystoneauth1==2.3.0
 MarkupSafe==0.23
-mysql-python>=1.2.3
-nose==1.3.4
+monotonic==1.0
+msgpack-python==0.4.7
+MySQL-python==1.2.5
+netaddr==0.7.18
+netifaces==0.10.4
+OCCO-API==1.0
+OCCO-Compiler==1.0
+OCCO-ConfigManager==1.0
+OCCO-Enactor==1.0
+OCCO-InfoBroker==1.0
+OCCO-InfraProcessor==1.0
+OCCO-ResourceHandler==1.0
+OCCO-Util==1.0
+oslo.i18n==2.7.0
+oslo.serialization==1.11.0
+oslo.utils==3.7.0
+pbr==1.8.1
 pika==0.9.14
+positional==1.0.1
+prettytable==0.7.2
 PyChef==0.2.3
-pymongo==2.8
-python-dateutil==2.2
-pytz==2014.9
+python-dateutil==2.4.2
+python-novaclient==3.4.0
+pytz==2015.4
 PyYAML==3.11
 redis==2.10.3
-requests==2.5.2
-six==1.8.0
+requests==2.9.1
+simplejson==3.8.1
+six==1.10.0
+stevedore==1.12.0
+unicodecsv==0.14.1
+voms-auth-system-openstack==1.1
+websocket-client==0.35.0
 Werkzeug==0.10.4
-websocket-client==0.32.0
-wsgiref==0.1.2
+wrapt==1.10.5
 
 -e ../util
 -e ../info-broker
 -e ../compiler
 -e ../enactor
 -e ../infra-processor
--e ../cloud-handler
--e ../service-composer
+-e ../resource-handler
+-e ../config-manager
 -e .

@@ -18,7 +18,7 @@ from pip.req import parse_requirements
 
 setuptools.setup(
     name='OCCO-API',
-    version='0.3.0',
+    version='1.0',
     author='MTA SZTAKI',
     author_email='occopus@lpds.sztaki.hu',
     namespace_packages=[
@@ -28,11 +28,12 @@ setuptools.setup(
         'occo.api',
     ],
     scripts=[
-        'bin/occo-infra-start',
-        'bin/occo-infra-stop',
-        'bin/occo-manager-service',
-        'bin/occo-get-ibkeys',
-        'bin/occo-import-node',
+        'bin/occopus-build',
+        'bin/occopus-destroy',
+        'bin/occopus-maintain',
+        'bin/occopus-scale',
+        'bin/occopus-rest-service',
+        'bin/occopus-import',
     ],
     url='https://github.com/occopus',
     license='LICENSE.txt',
@@ -44,8 +45,8 @@ setuptools.setup(
         'PyYAML',
         'Jinja2',
         'OCCO-Util',
-        'OCCO-CloudHandler',
-        'OCCO-ServiceComposer',
+        'OCCO-ResourceHandler',
+        'OCCO-ConfigManager',
         'OCCO-InfoBroker',
         'OCCO-Enactor',
         'OCCO-Compiler',

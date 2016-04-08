@@ -3,8 +3,8 @@ autoimport: !python_import
     - occo.infobroker
     - occo.infobroker.uds
     - occo.infobroker.rediskvstore
-    - occo.cloudhandler
-    - occo.plugins.cloudhandler.boto
+    - occo.resourcehandler
+    - occo.plugins.resourcehandler.boto
     - occo.plugins.infraprocessor.basic_infraprocessor
     - occo.plugins.infraprocessor.node_resolution.chef_cloudinit
     - occo.infraprocessor.synchronization.primitives

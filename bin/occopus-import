@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+if __name__ == '__main__':
+    import sys
+    import occo.util as util
+    import occo.util.config as config
+    import occo.exceptions
+    import os
+
+    cfg = config.DefaultConfig(dict())
+    cfg.add_argument('--redisconf',help='path to redis configuration file')
+    cfg.add_argument('datafile', help='node definition to import')
+    cfg.parse_args()
+
+    import occo.infobroker.kvstore
+    import occo.infobroker.rediskvstore
+    import yaml
+
+    if not cfg.redisconf:
+        possible_redisconfig_locations = [
+            os.getenv('OCCOPUS_REDIS_CONFIG_PATH'),
+            os.path.join(os.path.expanduser('~'),'.occopus/redis_config.yaml'),
+        ]
+        cfg.redisconf = config.path_coalesce(*possible_redisconfig_locations)
+
+    if not cfg.redisconf:
+        raise occo.exceptions.ConfigurationError('No redis config file has been found. Alternatives to specify: 1) use --redisconf parameter 2) store path in OCCOPUS_REDIS_CONFIG_PATH environment variable 3) store it at ~/.occopus/redis_config.yaml')
+
+    redis_data = config.yaml_load_file(cfg.redisconf)
+
+    kvs = redis_data['kvs']
+    data = config.yaml_load_file(cfg.datafile)
+
+    from occo.compiler.schema_check import SchemaChecker
+    from occo.exceptions import SchemaError
+    try:
+        SchemaChecker.check_node_def(data)
+    except SchemaError as e:
+        print e.context + e.msg
+    else:
+        for key, value in data.iteritems():
+            kvs[key] = value
+        print "Successfully imported nodes: "+", ".join([key.split(':')[1] for key in data.keys()])
+        

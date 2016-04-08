@@ -1,4 +1,16 @@
 
+v1.0 - April 2016
+- Rename cloudhandler to resourcehandler
+- Rename servicecomposer to configmanager
+- Add auth_data_path config option
+- Rename commands
+- Refactor occopus-import command parametering
+- Remove --listips parameter from occopus-build
+- Add occopus-scale command
+- Add occopus-maintain command
+- Add Schema Checking to occopus-import command
+- Update help messages in Occopus commands
+
 v0.3.0 - Januar 2016
 - Minor dependecy fixups
 

@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 MTA SZTAKI
+
+"""
+Infrastop
+~~~~~~~~~
+
+This script tears down an infrastructure using OCCO-ResourceHandler and
+OCCO-InfraProcessor.
+
+An infra_id is required.
+
+Author: adam.visegradi@sztaki.mta.hu
+"""
+
+import occo.api.occoapp as occoapp
+import occo.infobroker as ib
+import yaml
+import time
+import occo.util as util
+
+def setup_args(cfg):
+    cfg.add_argument('-i','--infraid' , 
+                     dest='infraid', 
+                     help='identifier of infrastructure to manage')
+    cfg.add_argument('-l','--list'    , 
+                     dest='list'  , action='store_true',
+                     help='lists active infrastructures')
+    cfg.add_argument('-t','--interval', 
+                     dest='interval', type=float, default=10,
+                     help='specifies the time between management sessions')
+    cfg.add_argument('-c','--cyclic'  , 
+                     dest='cyclic', action='store_true',
+                     help='performs continuous management')
+    cfg.add_argument('-r','--report', 
+                     dest='report', action='store_true',
+                     help='reports about infrastructure')
+
+if __name__ == '__main__':
+
+    occoapp.setup(setup_args)
+
+    import logging
+    log = logging.getLogger('occo')
+    datalog = logging.getLogger('occo.data')
+
+    if not occoapp.args.infraid:
+        if occoapp.args.list:
+            if not util.Infralist().get():
+                print "No active infrastructure!"
+            else:
+                print "List of active infrastructure:"
+            for i in util.Infralist().get():
+                print i
+            exit(0)
+        else:
+           print "ERROR: No infra_id (-i) specified! "
+           exit(1)
+
+    from occo.infraprocessor import InfraProcessor
+    from occo.enactor import Enactor
+    infraprocessor = InfraProcessor.instantiate(protocol='basic')
+    enactor = Enactor(occoapp.args.infraid, infraprocessor)
+
+    if occoapp.args.report:
+        state = ib.main_info_broker.get('infrastructure.state', occoapp.args.infraid)
+        log.info('Report list of nodes/ip addresses:')
+        for nodename in state:
+            log.info('%s:',nodename)
+            for node in state[nodename]:
+                log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
+    else:
+        try:
+            while True:
+                enactor.make_a_pass()
+                if not occoapp.args.cyclic:
+                    break
+                time.sleep(occoapp.args.interval)
+        except KeyboardInterrupt:
+            log.info('Ctrl+C - exiting.')
+            infraprocessor.cancel_pending()
+        except:
+            log.exception('Unexpected error:')
+            exit(1)
+

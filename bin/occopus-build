@@ -20,13 +20,12 @@ import occo.util as util
 import occo.infobroker as ib
 
 def setup_args(cfg):
-    cfg.add_argument('infra_def', type=occoapp.yaml_file)
+    cfg.add_argument('infra_def', type=occoapp.yaml_file,
+                     help='infrastructure description file')
     cfg.add_argument('--parallelize',
                      action='store_const', dest='strategy',
                      const='parallel', default='sequential',
-                     help='Parallelize processing instructions')
-    cfg.add_argument('--listips', action='store_true', default=False,
-                    help='Lists nodes with ip addresses')
+                     help='parallelize processing instructions')
 
 def submit_infrastructure(infra_description):
     from occo.compiler import StaticDescription
@@ -86,11 +85,10 @@ if __name__ == '__main__':
         datalog.debug('Submitted infrastructure dynamic state:\n%s',
                  yaml.dump(state,default_flow_style=False))
 
-        if occoapp.args.listips:
-            log.info('List of ip addresses:')
-            for nodename in state:
-                log.info('%s:',nodename)
-                for node in state[nodename]:
-                    log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
-        
+        log.info('List of nodes/ip addresses:')
+        for nodename in state:
+            log.info('%s:',nodename)
+            for node in state[nodename]:
+                log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
+        util.Infralist().add(infraid)
         print infraid

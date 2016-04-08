@@ -10,7 +10,7 @@ common_config:
             username: dummy
             password: dummy
 
-cloudhandler: !CloudHandler &ch
+resourcehandler: !ResourceHandler &ch
     <<: *lpds_boto
 uds: !UDS &uds
     protocol: redis

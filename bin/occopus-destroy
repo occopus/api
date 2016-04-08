@@ -6,7 +6,7 @@
 Infrastop
 ~~~~~~~~~
 
-This script tears down an infrastructure using OCCO-CloudHandler and
+This script tears down an infrastructure using OCCO-ResourceHandler and
 OCCO-InfraProcessor.
 
 An infra_id is required.
@@ -16,10 +16,12 @@ Author: adam.visegradi@sztaki.mta.hu
 
 import occo.api.occoapp as occoapp
 import occo.infobroker as ib
+import occo.util as util
 import yaml
 
 def setup_args(cfg):
-    cfg.add_argument('-i', dest='infraid', required=True)
+    cfg.add_argument('-i', dest='infraid', required=True,
+                     help='identifier of infrastructure to destroy')
 
 if __name__ == '__main__':
 
@@ -29,17 +31,8 @@ if __name__ == '__main__':
     log = logging.getLogger('occo')
     datalog = logging.getLogger('occo.data')
 
-    log.debug('Configuration:\n%r', occoapp.configuration)
-
-    log.info('Infrastructure ID supplied (%s), '
-            'loading infrastructure state',
-            occoapp.args.infraid)
-    dynamic_state = ib.main_info_broker.get(
-        'infrastructure.state', occoapp.args.infraid)
-    datalog.debug('Infrastructure state:\n%s',
-        yaml.dump(dynamic_state, default_flow_style=False))
-
     from occo.infraprocessor import InfraProcessor
     ip = InfraProcessor.instantiate(protocol='basic')
 
     occoapp.killall(occoapp.args.infraid, ip)
+    util.Infralist().remove(occoapp.args.infraid)

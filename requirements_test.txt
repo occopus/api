@@ -1,6 +1,7 @@
 --find-links http://pip.lpds.sztaki.hu/packages
 --no-index
 
+argparse>=1.2.1
 Babel==2.2.0
 backports.ssl-match-hostname==3.5.0.1
 boto==2.34.0

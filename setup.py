@@ -42,7 +42,6 @@ setuptools.setup(
     install_requires=[
         'Flask',
         'PyYAML',
-        'PyYAML',
         'Jinja2',
         'OCCO-Util',
         'OCCO-ResourceHandler',

@@ -18,7 +18,7 @@ from pip.req import parse_requirements
 
 setuptools.setup(
     name='OCCO-API',
-    version='1.0',
+    version='1.1',
     author='MTA SZTAKI',
     author_email='occopus@lpds.sztaki.hu',
     namespace_packages=[

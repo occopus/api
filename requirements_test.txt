@@ -1,6 +1,7 @@
 --find-links http://pip.lpds.sztaki.hu/packages
 --no-index
 
+argparse>=1.2.1
 Babel==2.2.0
 backports.ssl-match-hostname==3.5.0.1
 boto==2.34.0
@@ -19,14 +20,6 @@ msgpack-python==0.4.7
 MySQL-python==1.2.5
 netaddr==0.7.18
 netifaces==0.10.4
-OCCO-API==1.0
-OCCO-Compiler==1.0
-OCCO-ConfigManager==1.0
-OCCO-Enactor==1.0
-OCCO-InfoBroker==1.0
-OCCO-InfraProcessor==1.0
-OCCO-ResourceHandler==1.0
-OCCO-Util==1.0
 oslo.i18n==2.7.0
 oslo.serialization==1.11.0
 oslo.utils==3.7.0

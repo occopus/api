@@ -26,7 +26,8 @@ def setup_args(cfg):
                      action='store_const', dest='strategy',
                      const='parallel', default='sequential',
                      help='parallelize processing instructions')
-
+    cfg.add_argument('-i','--infra_id', dest='infraid', default=None,
+                     help='identifier of an infrastructure - if provided, occopus will reconfigure the infrastructure')
 def submit_infrastructure(infra_description):
     from occo.compiler import StaticDescription
     from occo.enactor import Enactor
@@ -36,6 +37,22 @@ def submit_infrastructure(infra_description):
 
     compiled_infrastructure = StaticDescription(infra_description)
     ib.main_uds.add_infrastructure(compiled_infrastructure)
+
+    infraprocessor = InfraProcessor.instantiate(
+                                    protocol='basic',
+                                    process_strategy=occoapp.args.strategy)
+    enactor = Enactor(compiled_infrastructure.infra_id, infraprocessor)
+    return compiled_infrastructure.infra_id, infraprocessor, enactor
+
+def update_infrastructure(infra_id, infra_description):
+    from occo.compiler import StaticDescription
+    from occo.enactor import Enactor
+    from occo.infraprocessor import InfraProcessor
+    # This will not be needed when the Enactor starts using the main_info_broker
+    from occo.infobroker import main_info_broker
+
+    compiled_infrastructure = StaticDescription(infra_description, infra_id)
+    ib.main_uds.update_infrastructure(compiled_infrastructure)
 
     infraprocessor = InfraProcessor.instantiate(
                                     protocol='basic',
@@ -54,7 +71,12 @@ if __name__ == '__main__':
     infra_description = occoapp.args.infra_def
     log.debug('Infrastructure description:\n%r', infra_description)
 
-    infraid, ip, enactor = submit_infrastructure(infra_description)
+    if not occoapp.args.infraid:
+        infraid, ip, enactor = submit_infrastructure(infra_description)
+    else:
+        log.debug('Updating infrastructure')
+        infraid, ip, enactor = update_infrastructure(occoapp.args.infraid,
+                infra_description)
 
     log.info('Submitted infrastructure: %r', infraid)
 

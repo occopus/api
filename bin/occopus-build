@@ -80,6 +80,7 @@ if __name__ == '__main__':
 
     log.info('Submitted infrastructure: %r', infraid)
 
+
     try:
         enactor.make_a_pass()
     except KeyboardInterrupt:
@@ -112,5 +113,6 @@ if __name__ == '__main__':
             log.info('%s:',nodename)
             for node in state[nodename]:
                 log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
-        util.Infralist().add(infraid)
+        if not occoapp.args.infraid:
+            util.Infralist().add(infraid)
         print infraid

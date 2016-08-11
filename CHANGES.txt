@@ -1,3 +1,8 @@
+v1.2 - August 2016
+- Fix dependencies and requirements
+- Add parallelize flag to maintain
+- Add infrastructure reconfiguration for occopus-build with -i
+
 v1.1 - June 2016
 - Minor fixes
 

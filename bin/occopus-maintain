@@ -3,15 +3,16 @@
 # Copyright (C) 2015 MTA SZTAKI
 
 """
-Infrastop
-~~~~~~~~~
 
-This script tears down an infrastructure using OCCO-ResourceHandler and
-OCCO-InfraProcessor.
+cccopus-maintain
+~~~~~~~~~~~~~~~~
+
+This script manages an infrastructure identified by infra_id. It can also list
+active infrastructures managed by occopus by using the --list or -l flag.
 
 An infra_id is required.
 
-Author: adam.visegradi@sztaki.mta.hu
+Author: Jozsef Kovacs
 """
 
 import occo.api.occoapp as occoapp
@@ -36,6 +37,10 @@ def setup_args(cfg):
     cfg.add_argument('-r','--report', 
                      dest='report', action='store_true',
                      help='reports about infrastructure')
+    cfg.add_argument('--parallelize',
+                     action='store_const', dest='strategy',
+                     const='parallel', default='sequential',
+                     help='parallelize processing instructions')
 
 if __name__ == '__main__':
 
@@ -60,7 +65,7 @@ if __name__ == '__main__':
 
     from occo.infraprocessor import InfraProcessor
     from occo.enactor import Enactor
-    infraprocessor = InfraProcessor.instantiate(protocol='basic')
+    infraprocessor = InfraProcessor.instantiate(protocol='basic', process_strategy=occoapp.args.strategy)
     enactor = Enactor(occoapp.args.infraid, infraprocessor)
 
     if occoapp.args.report:

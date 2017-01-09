@@ -8,7 +8,9 @@ if __name__ == '__main__':
     import os
 
     cfg = config.DefaultConfig(dict())
-    cfg.add_argument('--redisconf',help='path to redis configuration file')
+    cfg.add_argument(name='--cfg',
+                     dest='cfg_path',
+                     help='path to Occopus config file')
     cfg.add_argument('datafile', help='node definition to import')
     cfg.parse_args()
 
@@ -16,19 +18,19 @@ if __name__ == '__main__':
     import occo.infobroker.rediskvstore
     import yaml
 
-    if not cfg.redisconf:
-        possible_redisconfig_locations = [
-            os.getenv('OCCOPUS_REDIS_CONFIG_PATH'),
-            os.path.join(os.path.expanduser('~'),'.occopus/redis_config.yaml'),
+    if not cfg.cfg_path:
+        possible_config_locations = [
+            os.getenv('OCCOPUS_CONFIG_PATH'),
+            os.path.join(os.path.expanduser('~'),'.occopus/occopus_config.yaml'),
         ]
-        cfg.redisconf = config.path_coalesce(*possible_redisconfig_locations)
+        cfg.cfg_path = config.path_coalesce(*possible_config_locations)
 
-    if not cfg.redisconf:
-        raise occo.exceptions.ConfigurationError('No redis config file has been found. Alternatives to specify: 1) use --redisconf parameter 2) store path in OCCOPUS_REDIS_CONFIG_PATH environment variable 3) store it at ~/.occopus/redis_config.yaml')
+    if not cfg.cfg_path:
+        raise occo.exceptions.ConfigurationError('No Occopus config file has been found. Alternatives to specify: 1) use --cfg parameter 2) store path in OCCOPUS_CONFIG_PATH environment variable 3) store it at ~/.occopus/occopus_config.yaml')
 
-    redis_data = config.yaml_load_file(cfg.redisconf)
-
-    kvs = redis_data['kvs']
+    occo_config_data = config.yaml_load_file(cfg.cfg_path)
+    uds = occo_config_data['components']['uds']
+    kvs = uds.kvstore
     data = config.yaml_load_file(cfg.datafile)
 
     from occo.compiler.schema_check import SchemaChecker

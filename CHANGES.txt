@@ -1,3 +1,7 @@
+
+v1.3 - Janury 2017
+- occopus-import command use occopus-config instead of redis-config file
+
 v1.2 - August 2016
 - Fix dependencies and requirements
 - Add parallelize flag to maintain

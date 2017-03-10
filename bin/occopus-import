@@ -16,8 +16,8 @@ if __name__ == '__main__':
 
     import occo.infobroker.kvstore
     import occo.infobroker.rediskvstore
-    import yaml
-
+    from ruamel import yaml
+    
     if not cfg.cfg_path:
         possible_config_locations = [
             os.getenv('OCCOPUS_CONFIG_PATH'),

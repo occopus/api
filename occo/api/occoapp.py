@@ -160,7 +160,7 @@ def teardown(infra_id, ip):
     from occo.util import flatten
     nodes = list(flatten(i.itervalues() for i in dynamic_state.itervalues()))
 
-    import yaml
+    from ruamel import yaml
     drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
     log.debug('Dropping nodes: %r', [n['node_id'] for n in nodes])
     datalog.debug('DropNode:\n%s',

@@ -17,7 +17,6 @@ Author: Jozsef Kovacs
 
 import occo.api.occoapp as occoapp
 import occo.infobroker as ib
-import yaml
 import time
 import occo.util as util
 

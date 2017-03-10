@@ -100,7 +100,7 @@ if __name__ == '__main__':
                   'infrastructure has been torn down.')
         exit(1)
     else:
-        import yaml
+        from ruamel import yaml
         from occo.infobroker import main_info_broker
 
         state = main_info_broker.get('infrastructure.state', infraid)

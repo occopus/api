@@ -42,6 +42,8 @@ setuptools.setup(
     install_requires=[
         'Flask',
         'PyYAML',
+        'ruamel.yaml',
+        'ruamel.ordereddict',
         'Jinja2',
         'OCCO-Util',
         'OCCO-ResourceHandler',

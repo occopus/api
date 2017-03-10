@@ -149,18 +149,17 @@ def killall(infra_id, ip):
 
 def teardown(infra_id, ip):
     import logging
+    from ruamel import yaml
     log = logging.getLogger('occo.occoapp')
     datalog = logging.getLogger('occo.data.occoapp')
 
     log.info('Tearing down infrastructure %r', infra_id)
 
     from occo.infobroker import main_info_broker
-    dynamic_state = main_info_broker.get('infrastructure.state', infra_id)
-
+     
+    state = main_info_broker.get('infrastructure.node_instances',infra_id)
     from occo.util import flatten
-    nodes = list(flatten(i.itervalues() for i in dynamic_state.itervalues()))
-
-    from ruamel import yaml
+    nodes = list(flatten(i.itervalues() for i in state.itervalues()))
     drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
     log.debug('Dropping nodes: %r', [n['node_id'] for n in nodes])
     datalog.debug('DropNode:\n%s',
@@ -169,3 +168,4 @@ def teardown(infra_id, ip):
     ip.push_instructions(drop_node_commands)
 
     ip.push_instructions(ip.cri_drop_infrastructure(infra_id))
+    

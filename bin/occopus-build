@@ -112,6 +112,7 @@ if __name__ == '__main__':
             log.info('%s:',nodename)
             for node in state[nodename]:
                 log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
-        if not occoapp.args.infraid:
+ 
+        if infraid not in util.Infralist().get():
             util.Infralist().add(infraid)
         print infraid

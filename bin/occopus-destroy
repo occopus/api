@@ -33,5 +33,8 @@ if __name__ == '__main__':
     from occo.infraprocessor import InfraProcessor
     ip = InfraProcessor.instantiate(protocol='basic')
 
-    occoapp.killall(occoapp.args.infraid, ip)
-    util.Infralist().remove(occoapp.args.infraid)
+    if occoapp.args.infraid in util.Infralist().get():
+        occoapp.killall(occoapp.args.infraid, ip)
+        util.Infralist().remove(occoapp.args.infraid)
+    else:
+        log.error("Unknown infrastructure: \"%s\"",occoapp.args.infraid)

@@ -73,13 +73,11 @@ if __name__ == '__main__':
 
     if not occoapp.args.infraid:
         infraid, ip, enactor = submit_infrastructure(infra_description)
+        log.info('Submitted infrastructure: %r', infraid)
     else:
-        log.debug('Updating infrastructure')
+        log.info('Updating infrastructure: %r', occoapp.args.infraid)
         infraid, ip, enactor = update_infrastructure(occoapp.args.infraid,
                 infra_description)
-
-    log.info('Submitted infrastructure: %r', infraid)
-
 
     try:
         enactor.make_a_pass()
@@ -103,6 +101,7 @@ if __name__ == '__main__':
         from ruamel import yaml
         from occo.infobroker import main_info_broker
 
+        log.info('Query infrastructure details: %r', infraid)
         state = main_info_broker.get('infrastructure.state', infraid)
         log.info('Submitted infrastructure: %r', infraid)
         datalog.debug('Submitted infrastructure dynamic state:\n%s',

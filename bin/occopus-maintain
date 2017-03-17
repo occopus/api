@@ -85,6 +85,8 @@ if __name__ == '__main__':
             log.info('Ctrl+C - exiting.')
             infraprocessor.cancel_pending()
         except:
-            log.exception('Unexpected error:')
+            log.error('Unexpected error:')
+            log.debug(traceback.format_exc())
+            log.error(str(ex))
             exit(1)
 

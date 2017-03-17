@@ -18,6 +18,7 @@ Author: adam.visegradi@sztaki.mta.hu
 import occo.api.occoapp as occoapp
 import occo.util as util
 import occo.infobroker as ib
+import traceback
 
 def setup_args(cfg):
     cfg.add_argument('infra_def', type=occoapp.yaml_file,
@@ -86,16 +87,18 @@ if __name__ == '__main__':
         occoapp.killall(infraid, ip)
         log.info('Cancelled starting infrastructure (Ctrl+C); the partially'
                  ' built infrastructure has been torn down.')
-    except Exception:
+    except Exception as ex:
         log.error('Error occured, tearing down the infrastructure')
         try:
             occoapp.killall(infraid, ip)
-        except:
-            log.exception(
-                'IGNORING exception while tearing down infrastructure:')
-        log.exception('An error occured while building the infrastructure:')
+        except Exception as killex:
+            log.error('IGNORING exception while tearing down infrastructure:')
+            log.debug(traceback.format_exc())
+            log.error(str(killex))
         log.error('An unrecoverable error occured; the partially built '
-                  'infrastructure has been torn down.')
+                  'infrastructure has been torn down, because of the following error:')
+        log.debug(traceback.format_exc())
+        log.error(str(ex))
         exit(1)
     else:
         from ruamel import yaml

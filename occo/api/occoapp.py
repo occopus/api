@@ -143,9 +143,11 @@ def killall(infra_id, ip):
     import logging
     import occo.infobroker as ib
     log = logging.getLogger('occo.occoapp')
-    log.info('Dropping infrastructure %r', infra_id)
+    log.info('Start dropping infrastructure %r', infra_id)
     teardown(infra_id, ip)
     ib.main_uds.remove_infrastructure(infra_id)
+    log.info('Finished dropping infrastructure %r', infra_id)
+    
 
 def teardown(infra_id, ip):
     import logging
@@ -153,7 +155,7 @@ def teardown(infra_id, ip):
     log = logging.getLogger('occo.occoapp')
     datalog = logging.getLogger('occo.data.occoapp')
 
-    log.info('Tearing down infrastructure %r', infra_id)
+    #log.info('Tearing down infrastructure %r', infra_id)
 
     from occo.infobroker import main_info_broker
      

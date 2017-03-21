@@ -31,7 +31,12 @@ if __name__ == '__main__':
     occo_config_data = config.yaml_load_file(cfg.cfg_path)
     uds = occo_config_data['components']['uds']
     kvs = uds.kvstore
-    data = config.yaml_load_file(cfg.datafile)
+    try:
+        data = config.yaml_load_file(cfg.datafile)
+    except Exception as e:
+        print repr(e)
+        print str(e)
+        exit(1)
 
     from occo.compiler.schema_check import SchemaChecker
     from occo.exceptions import SchemaError

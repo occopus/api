@@ -213,7 +213,7 @@ def delete_infrastructure(infraid):
     
 @app.route('/infrastructures/<infraid>/attach', methods=['POST'])
 def attach_infrastructure(infraid):
-    """Starts maintaining an already existing infrastructure.
+    """Starts maintaining an existing infrastructure.
 
     :param infraid: The identifier of the infrastructure. 
 
@@ -245,7 +245,7 @@ def attach_infrastructure(infraid):
 
 @app.route('/infrastructures/<infraid>/detach', methods=['POST'])
 def detach_infrastructure(infraid):
-    """Stops maintaining an infrastructure being maintained.
+    """Stops maintaining an infrastructure.
 
     :param infraid: The identifier of the infrastructure. 
 

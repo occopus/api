@@ -1,3 +1,9 @@
+v1.4 - March 2017
+- New yaml reader: ruamel
+- Skip health_check before infra destroyment
+- Improve exception handling: trace to file, messages on screen
+- Introduce attach and detach functions in rest
+- Make rest and cmd-line handling possible on same infra
 
 v1.3 - Janury 2017
 - occopus-import command use occopus-config instead of redis-config file

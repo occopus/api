@@ -15,7 +15,6 @@ Author: adam.visegradi@sztaki.mta.hu
 """
 
 import occo.api.occoapp as occoapp
-import yaml
 
 def setup_args(cfg):
     cfg.add_argument('-i','--infraid', dest='infraid', required=True,

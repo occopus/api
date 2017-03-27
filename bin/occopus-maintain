@@ -17,9 +17,9 @@ Author: Jozsef Kovacs
 
 import occo.api.occoapp as occoapp
 import occo.infobroker as ib
-import yaml
 import time
 import occo.util as util
+import traceback
 
 def setup_args(cfg):
     cfg.add_argument('-i','--infraid' , 
@@ -85,7 +85,9 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             log.info('Ctrl+C - exiting.')
             infraprocessor.cancel_pending()
-        except:
-            log.exception('Unexpected error:')
+        except Exception as ex:
+            log.error('Unexpected error:')
+            log.debug(traceback.format_exc())
+            log.error(str(ex))
             exit(1)
 

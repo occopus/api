@@ -46,7 +46,7 @@ def init(strategy):
 def keyboardInterrupt():
     log.info('Ctrl+C - Exiting.')
     for i in manager.process_table.iterkeys():
-        log.info('Infrastructure left running: %r', i)
+        log.info('Infrastructure left running: %s', str(i))
 
 class RequestException(Exception):
     def __init__(self, status_code, reason, *args):
@@ -86,16 +86,20 @@ def unhandled_exception(error):
     response = jsonify(dict(message=error.message))
     response.status_code = 500
     return response
-    
-def check_infraid_exists(infraid):
-    if not infraid in manager.process_table.keys():
-        raise RequestException(300, 'ERROR: invalid parameter(s)')
 
-def check_nodename_exists(infraid,nodename):
-    check_infraid_exists(infraid)
-    if not nodename in main_info_broker.get('infrastructure.state',
-            infra_id=infraid):
-        raise RequestException(300, 'ERROR: invalid parameter(s)')
+def error_if_nodename_does_not_exist(infraid,nodename):
+    sd = main_info_broker.get('infrastructure.static_description',
+                               infra_id=infraid)
+    if not nodename in [ node['name'] for node in sd.nodes ]:
+        raise RequestException(300, 
+              'ERROR: node \'{0} does not exist in infrastructure \'{1}\'!'.format(
+              nodename,infraid))
+
+def error_if_infraid_does_not_exist(infraid):
+    if infraid not in util.Infralist().get():
+        raise RequestException(300,
+              'ERROR: infrastructure \'{0}\' does not exist!'.format(
+              infraid))
 
 @app.route('/infrastructures/', methods=['POST'])
 def submit_infrastructure():
@@ -124,6 +128,7 @@ def submit_infrastructure():
         raise RequestException(400, 'Empty POST data')
     try:
         infraid = manager.add(infra_desc)
+        util.Infralist().add(infraid)
     except Exception as ex:
         log.exception('manager.add:')
         raise RequestException(400, str(ex))
@@ -158,8 +163,8 @@ def report_infrastructure(infraid):
             }
 
     """
-    check_infraid_exists(infraid)
-    log.debug('Serving request %s infrastructures/%r',
+    error_if_infraid_does_not_exist(infraid)
+    log.debug('Serving request %s infrastructures/%s',
                 request.method, infraid)
     result = create_infra_report(infraid)
     return jsonify(result)
@@ -180,7 +185,7 @@ def list_infrastructures():
 
     """
     log.debug('Serving request: %s infrastructures',request.method)
-    return jsonify(dict(infrastructures=manager.process_table.keys()))
+    return jsonify(dict(infrastuctures=util.Infralist().get()))
 
 @app.route('/infrastructures/<infraid>', methods=['DELETE'])
 def delete_infrastructure(infraid):
@@ -196,14 +201,80 @@ def delete_infrastructure(infraid):
             }
 
     """
-    check_infraid_exists(infraid)
-    log.debug('Serving request %s infrastructures/%r',
+    error_if_infraid_does_not_exist(infraid)
+    log.debug('Serving request %s infrastructures/%s',
                 request.method, infraid)
     if infraid in manager.process_table:
         manager.stop_provisioning(infraid)
-        manager.tear_down(infraid)
+    manager.tear_down(infraid)
+    util.Infralist().remove(infraid)
+    
     return jsonify(dict(infraid=infraid))
     
+@app.route('/infrastructures/<infraid>/attach', methods=['POST'])
+def attach_infrastructure(infraid):
+    """Starts maintaining an existing infrastructure.
+
+    :param infraid: The identifier of the infrastructure. 
+
+    :return type:
+        .. code::
+
+            {
+                "infraid": "<infraid>"
+            }
+
+    """
+    error_if_infraid_does_not_exist(infraid)
+    if infraid in manager.process_table.keys():
+        raise RequestException(300, 
+              'ERROR: Infrastructure {0} already being maintained!'.format(
+              infraid))
+    log.debug('Serving request %s infrastructures/%s',
+                request.method, infraid)
+    log.info('Start maintenance for infrastructure %s', infraid)
+    try:
+        infraid = manager.attach(infraid)
+    except Exception as ex:
+        log.exception('manager.attach:')
+        raise RequestException(400, str(ex))
+    else:
+        return jsonify(dict(infraid=infraid))
+
+    return jsonify(dict(infraid=infraid))
+
+@app.route('/infrastructures/<infraid>/detach', methods=['POST'])
+def detach_infrastructure(infraid):
+    """Stops maintaining an infrastructure.
+
+    :param infraid: The identifier of the infrastructure. 
+
+    :return type:
+        .. code::
+
+            {
+                "infraid": "<infraid>"
+            }
+
+    """
+    error_if_infraid_does_not_exist(infraid)
+    if not infraid in manager.process_table.keys():
+        raise RequestException(300, 
+              'ERROR: Infrastructure {0} is not maintained!'.format(
+              infraid))
+    log.debug('Serving request %s infrastructures/%s',
+                request.method, infraid)
+    log.info('Stop maintaining infrastructure %s', infraid)
+    try:
+        infraid = manager.detach(infraid)
+    except Exception as ex:
+        log.exception('manager.detach:')
+        raise RequestException(400, str(ex))
+    else:
+        return jsonify(dict(infraid=infraid))
+
+    return jsonify(dict(infraid=infraid))
+
 @app.route('/infrastructures/<infraid>/scaleup/<nodename>', methods=['POST'])
 def create_node_nocount(infraid, nodename):
     """Scales up a node in an infrastructure by creating a new instance of the
@@ -244,7 +315,8 @@ def create_node(infraid, nodename, count = 1):
                 "nodename": "<nodename>"
             }
     """
-    check_nodename_exists(infraid, nodename)
+    error_if_infraid_does_not_exist(infraid)
+    error_if_nodename_does_not_exist(infraid,nodename)
     scaling.add_createnode_request(infraid, nodename, count)
     return jsonify(dict(method='scaleup', 
                         infraid=infraid,
@@ -290,7 +362,8 @@ def drop_node(infraid, nodename, nodeid):
                 "nodename": "<nodename>"
             }
     """
-    check_nodename_exists(infraid, nodename)
+    error_if_infraid_does_not_exist(infraid)
+    error_if_nodename_does_not_exist(infraid,nodename)
     scaling.add_dropnode_request(infraid, nodename, nodeid)
     return jsonify(dict(method='scaledown', 
                         infraid=infraid,

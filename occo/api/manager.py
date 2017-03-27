@@ -32,6 +32,7 @@ import occo.infraprocessor as ip
 
 from occo.infobroker import main_info_broker
 from occo.infobroker import main_uds
+import traceback
 
 import logging
 log = logging.getLogger('occo.manager_service')
@@ -60,7 +61,7 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
         self.process_strategy = process_strategy
 
     def __call__(self):
-        log.info('Starting maintenance process for %r', self.infra_id)
+        log.info('Starting maintenance process for %s', self.infra_id)
 
         from occo.enactor import Enactor
         from occo.infraprocessor import InfraProcessor
@@ -69,16 +70,19 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
                                         protocol='basic',
                                         process_strategy=self.process_strategy)
         enactor = Enactor(self.infra_id, infraprocessor)
-        try:
-            while True:
+        while True:
+            try:
                 enactor.make_a_pass()
                 time.sleep(self.enactor_interval)
-        except KeyboardInterrupt:
-            log.info('Ctrl+C - exiting.')
-            infraprocessor.cancel_pending()
-        except:
-            log.exception('Unexpected error:')
-            exit(1)
+            except KeyboardInterrupt:
+                log.info('Ctrl+C - exiting.')
+                infraprocessor.cancel_pending()
+                return 1
+            except Exception as ex:
+                log.error('Unexpected error:')
+                log.debug(traceback.format_exc())
+                log.error(str(ex))
+                return 1
 
 class InfrastructureManager(object):
     """
@@ -110,6 +114,26 @@ class InfrastructureManager(object):
         self.start_provisioning(infra_id)
         return infra_id
 
+    def attach(self, infra_id):
+        """
+        Start provisioning an existing infrastructure.
+
+        :param str infra_id: The identifier of the infrastructure. The
+            infrastructure must be already compiled and stored in the UDS.
+        """
+        self.start_provisioning(infra_id)
+        return infra_id
+
+    def detach(self, infra_id):
+        """
+        Stop provisioning an existing infrastructure.
+
+        :param str infra_id: The identifier of the infrastructure. The
+            infrastructure must be already compiled and stored in the UDS.
+        """
+        self.stop_provisioning(infra_id)
+        return infra_id
+
     def submit_infrastructure(self, infra_desc):
         """
         Compile the given infrastructure and stores it in the UDS.
@@ -120,11 +144,11 @@ class InfrastructureManager(object):
 
         from occo.compiler import StaticDescription
 
-        datalog.debug('Adding infrastructure:\n%r', infra_desc)
+        datalog.debug('Adding infrastructure:\n%s', infra_desc)
         compiled_infrastructure = StaticDescription(infra_desc)
         main_uds.add_infrastructure(compiled_infrastructure)
         infra_id = compiled_infrastructure.infra_id
-        log.info("Submitted infrastructure: %r", infra_id)
+        log.info("Submitted infrastructure: %s", infra_id)
         return infra_id
     
     def start_provisioning(self, infra_id):
@@ -149,11 +173,11 @@ class InfrastructureManager(object):
         if infra_id in self.process_table:
             raise InfrastructureIDTakenException(infra_id)
 
-        log.debug('Starting provisioning infrastructure %r', infra_id)
+        log.debug('Starting provisioning infrastructure %s', infra_id)
         p = InfrastructureMaintenanceProcess(   infra_id = infra_id, 
                                                 process_strategy = self.process_strategy)
         self.process_table[infra_id] = p
-        log.info('Spawning maintenance process for %r', infra_id)
+        log.info('Spawning maintenance process for %s', infra_id)
         p.start()
 
     def stop_provisioning(self, infra_id, wait_timeout=60):
@@ -170,7 +194,7 @@ class InfrastructureManager(object):
         :raise InfrastructureIDNotFoundException: if the infrastructure is not
             managed.
         """
-        log.debug('Stopping provisioning infrastructure %r', infra_id)
+        log.debug('Stopping provisioning infrastructure %s', infra_id)
         try:
             p = self.process_table.pop(infra_id)
             p.graceful_terminate(wait_timeout)
@@ -213,7 +237,7 @@ class InfrastructureManager(object):
                 'Cannot tear down an infrastructure while it\'s '
                 'being maintained.', infra_id)
 
-        log.debug('Tearing down infrastructure %r', infra_id)
+        log.debug('Tearing down infrastructure %s', infra_id)
 
         from occo.infraprocessor import InfraProcessor
         ip = InfraProcessor.instantiate(protocol='basic',

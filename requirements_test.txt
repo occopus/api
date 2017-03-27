@@ -43,10 +43,13 @@ pytz==2015.4
 PyYAML==3.11
 redis==2.10.3
 requests==2.9.1
+ruamel.yaml==0.13.14
+ruamel.ordereddict==0.4.9
 setuptools>=11.3
 simplejson==3.8.1
 six==1.10.0
 stevedore==1.12.0
+typing==3.5.3.0
 unicodecsv==0.14.1
 voms-auth-system-openstack==1.1
 websocket-client==0.35.0

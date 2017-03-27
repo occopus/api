@@ -17,7 +17,7 @@ Author: adam.visegradi@sztaki.mta.hu
 import occo.api.occoapp as occoapp
 import occo.infobroker as ib
 import occo.util as util
-import yaml
+import traceback
 
 def setup_args(cfg):
     cfg.add_argument('-i', dest='infraid', required=True,
@@ -34,5 +34,13 @@ if __name__ == '__main__':
     from occo.infraprocessor import InfraProcessor
     ip = InfraProcessor.instantiate(protocol='basic')
 
-    occoapp.killall(occoapp.args.infraid, ip)
-    util.Infralist().remove(occoapp.args.infraid)
+    try:
+        if occoapp.args.infraid in util.Infralist().get():
+            occoapp.killall(occoapp.args.infraid, ip)
+            util.Infralist().remove(occoapp.args.infraid)
+        else:
+            log.error("Unknown infrastructure: \"%s\"",occoapp.args.infraid)
+    except Exception as ex:
+        log.debug(traceback.format_exc())
+        log.error(str(ex))
+        exit(1)

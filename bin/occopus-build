@@ -19,6 +19,7 @@ import occo.api.occoapp as occoapp
 import occo.util as util
 import occo.infobroker as ib
 import traceback
+from occo.exceptions import SchemaError
 
 def setup_args(cfg):
     cfg.add_argument('infra_def', type=occoapp.yaml_file,
@@ -72,16 +73,18 @@ if __name__ == '__main__':
     infra_description = occoapp.args.infra_def
     log.debug('Infrastructure description:\n%r', infra_description)
 
-    if not occoapp.args.infraid:
-        infraid, ip, enactor = submit_infrastructure(infra_description)
-        log.info('Submitted infrastructure: %r', infraid)
-    else:
-        log.info('Updating infrastructure: %r', occoapp.args.infraid)
-        infraid, ip, enactor = update_infrastructure(occoapp.args.infraid,
-                infra_description)
-
     try:
+        if not occoapp.args.infraid:
+            infraid, ip, enactor = submit_infrastructure(infra_description)
+            log.info('Submitted infrastructure: %r', infraid)
+        else:
+            log.info('Updating infrastructure: %r', occoapp.args.infraid)
+            infraid, ip, enactor = update_infrastructure(occoapp.args.infraid,
+                    infra_description)
+
         enactor.make_a_pass()
+    except SchemaError as e:
+        exit(1)
     except KeyboardInterrupt:
         log.info('Ctrl+C - Destroying infrastructure and exiting.')
         occoapp.killall(infraid, ip)

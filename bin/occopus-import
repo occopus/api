@@ -6,6 +6,7 @@ if __name__ == '__main__':
     import occo.util.config as config
     import occo.exceptions
     import os
+    import getpass
 
     cfg = config.DefaultConfig(dict())
     cfg.add_argument(name='--cfg',
@@ -46,6 +47,7 @@ if __name__ == '__main__':
         print e.context + e.msg
     else:
         for key, value in data.iteritems():
-            kvs[key] = value
-        print "Successfully imported nodes: "+", ".join([key.split(':')[1] for key in data.keys()])
+            newkey = 'node_def:'+getpass.getuser()+'@'+key.split(':',1)[1]
+            kvs[newkey] = value
+        print "Successfully imported nodes: "+", ".join([key.split(':',1)[1] for key in data.keys()])
         

@@ -1,3 +1,7 @@
+v1.5 - May 2017
+- Add multiuser support in handling redis server
+- Add SchemaError handling in occopus_build
+
 v1.4 - March 2017
 - New yaml reader: ruamel
 - Skip health_check before infra destroyment

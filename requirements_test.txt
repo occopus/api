@@ -12,6 +12,7 @@ dicttoxml==1.7.4
 docker==2.5.1
 enum34>=1.1.6
 Flask==0.10.1
+Flask-Cors==3.0.3
 funcsigs==0.4
 idna>=2.0
 ipaddress>=1.0.16

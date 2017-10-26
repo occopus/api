@@ -12,10 +12,6 @@ import occo.api.occoapp as occoapp
 import occo.api.rest as occorest
 
 def setup_args(cfg):
-    cfg.add_argument('--host', type=str, default='127.0.0.1',
-                     help='host to bind service')
-    cfg.add_argument('--port', type=int, default=5000,
-                     help='port to bind service')
     cfg.add_argument('--parallelize',
                      action='store_const', dest='strategy',
                      const='parallel', default='sequential',
@@ -27,10 +23,10 @@ if __name__ == '__main__':
 
     occoapp.setup(setup_args)
 
-    occorest.init(occoapp.args.strategy)    
+    occorest.init(occoapp.args.strategy)
 
     try:
-        occorest.app.run( debug=True, host=occoapp.args.host, port=occoapp.args.port)
+        occorest.app.run( debug=True, host=occoapp.configuration['components']['rest']['host'], port=occoapp.configuration['components']['rest']['port'])
         # TODO: Expose the manager through Flask
         # TODO: Expose InfoBroker
 

@@ -12,6 +12,10 @@ import occo.api.occoapp as occoapp
 import occo.api.rest as occorest
 
 def setup_args(cfg):
+    cfg.add_argument('--host', type=str,
+                     help='host to bind service')
+    cfg.add_argument('--port', type=int,
+                     help='port to bind service')
     cfg.add_argument('--parallelize',
                      action='store_const', dest='strategy',
                      const='parallel', default='sequential',
@@ -26,10 +30,11 @@ if __name__ == '__main__':
     occorest.init(occoapp.args.strategy)
 
     try:
-        occorest.app.run( debug=True, host=occoapp.configuration['components']['rest']['host'], port=occoapp.configuration['components']['rest']['port'])
+        occorest.app.run(debug=True,
+                         host=occoapp.configuration['components']['rest']['host'] if occoapp.args.host is None else occoapp.args.host,
+                         port=occoapp.configuration['components']['rest']['port'] if occoapp.args.port is None else occoapp.args.port)
         # TODO: Expose the manager through Flask
         # TODO: Expose InfoBroker
 
     except KeyboardInterrupt:
         occorest.keyboardInterrupt()
-

@@ -27,7 +27,7 @@ from occo.infobroker import main_info_broker
 from occo.infobroker import main_uds
 from occo.exceptions import KeyNotFoundError, ArgumentError
 
-import logging 
+import logging
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -93,7 +93,7 @@ def error_if_nodename_does_not_exist(infraid,nodename):
     sd = main_info_broker.get('infrastructure.static_description',
                                infra_id=infraid)
     if not nodename in [ node['name'] for node in sd.nodes ]:
-        raise RequestException(300, 
+        raise RequestException(300,
               'ERROR: node \'{0} does not exist in infrastructure \'{1}\'!'.format(
               nodename,infraid))
 
@@ -119,7 +119,7 @@ def submit_infrastructure():
             }
 
     Example::
-    
+
         curl -X POST http://127.0.0.1:5000/infrastructures/ --data-binary @my_infrastructure_description.yaml
     """
     log.debug('Serving request %s infrastructures',
@@ -141,7 +141,7 @@ def submit_infrastructure():
 def report_infrastructure(infraid):
     """Report the details of an infrastructure.
 
-    :param infraid: The identifier of the infrastructure. 
+    :param infraid: The identifier of the infrastructure.
 
     :return type:
         .. code::
@@ -193,7 +193,7 @@ def list_infrastructures():
 def delete_infrastructure(infraid):
     """Shuts down an infrastructure.
 
-    :param infraid: The identifier of the infrastructure. 
+    :param infraid: The identifier of the infrastructure.
 
     :return type:
         .. code::
@@ -210,14 +210,14 @@ def delete_infrastructure(infraid):
         manager.stop_provisioning(infraid)
     manager.tear_down(infraid)
     util.Infralist().remove(infraid)
-    
+
     return jsonify(dict(infraid=infraid))
-    
+
 @app.route('/infrastructures/<infraid>/attach', methods=['POST'])
 def attach_infrastructure(infraid):
     """Starts maintaining an existing infrastructure.
 
-    :param infraid: The identifier of the infrastructure. 
+    :param infraid: The identifier of the infrastructure.
 
     :return type:
         .. code::
@@ -229,7 +229,7 @@ def attach_infrastructure(infraid):
     """
     error_if_infraid_does_not_exist(infraid)
     if infraid in manager.process_table.keys():
-        raise RequestException(300, 
+        raise RequestException(300,
               'ERROR: Infrastructure {0} already being maintained!'.format(
               infraid))
     log.debug('Serving request %s infrastructures/%s',
@@ -249,7 +249,7 @@ def attach_infrastructure(infraid):
 def detach_infrastructure(infraid):
     """Stops maintaining an infrastructure.
 
-    :param infraid: The identifier of the infrastructure. 
+    :param infraid: The identifier of the infrastructure.
 
     :return type:
         .. code::
@@ -261,7 +261,7 @@ def detach_infrastructure(infraid):
     """
     error_if_infraid_does_not_exist(infraid)
     if not infraid in manager.process_table.keys():
-        raise RequestException(300, 
+        raise RequestException(300,
               'ERROR: Infrastructure {0} is not maintained!'.format(
               infraid))
     log.debug('Serving request %s infrastructures/%s',
@@ -303,9 +303,9 @@ def create_node(infraid, nodename, count = 1):
     """Scales up a node in an infrastructure by creating the specified number of
     instances of the node.
 
-    :param infraid: The identifier of the infrastructure. 
-    :param nodename: The name of the node to be scaled up. 
-    :param count: The number of instances to be created. 
+    :param infraid: The identifier of the infrastructure.
+    :param nodename: The name of the node to be scaled up.
+    :param count: The number of instances to be created.
 
     :return type:
         .. code::
@@ -320,7 +320,7 @@ def create_node(infraid, nodename, count = 1):
     error_if_infraid_does_not_exist(infraid)
     error_if_nodename_does_not_exist(infraid,nodename)
     scaling.add_createnode_request(infraid, nodename, count)
-    return jsonify(dict(method='scaleup', 
+    return jsonify(dict(method='scaleup',
                         infraid=infraid,
                         nodename=nodename,
                         count=count))
@@ -350,9 +350,9 @@ def drop_node_noselect(infraid, nodename):
 def drop_node(infraid, nodename, nodeid):
     """Scales down a node in an infrastructure by destroying one of its instances specified.
 
-    :param infraid: The identifier of the infrastructure. 
-    :param nodename: The name of the node which is to be scaled down. 
-    :param nodeid: The identifier of the selected instance. 
+    :param infraid: The identifier of the infrastructure.
+    :param nodename: The name of the node which is to be scaled down.
+    :param nodeid: The identifier of the selected instance.
 
     :return type:
         .. code::
@@ -367,10 +367,30 @@ def drop_node(infraid, nodename, nodeid):
     error_if_infraid_does_not_exist(infraid)
     error_if_nodename_does_not_exist(infraid,nodename)
     scaling.add_dropnode_request(infraid, nodename, nodeid)
-    return jsonify(dict(method='scaledown', 
+    return jsonify(dict(method='scaledown',
                         infraid=infraid,
                         nodename=nodename,
                         nodeid=nodeid))
+
+@app.route('/infrastructures/<infraid>/notify', methods=['POST'])
+def set_notification(infraid):
+    """Sets notification properties for an infrastructure.
+
+    :param infraid: The identifier of the infrastructure.
+
+    Requires a notification description in JSON format as the POST data.
+
+    :return type:
+        .. code::
+
+            {
+                "infraid": "<infraid>",
+            }
+    """
+    error_if_infraid_does_not_exist(infraid)
+    notify_info = request.stream.read()
+    main_uds.set_infrastructure_notification(infraid, notify_info)
+    return jsonify(dict(infraid=infraid))
 
 @app.route('/info/<key>', methods=['GET'])
 def info(key):
@@ -393,5 +413,3 @@ def info(key):
         log.info('InfoRouter: Exception: %s', str(e))
         log.exception('main_info_broker.get:')
         raise RequestException(404, str(e), 'Request cannot be served.')
-
-

@@ -71,7 +71,7 @@ def setup(setup_args=None, cfg_path=None, auth_data_path=None):
 
             The :mod:`logging` configuration dictionary that will be used with
             :func:`logging.config.dictConfig` to setup logging.
-        
+
         ``components``
 
             The components of the OCCO architecture that's need to be built.
@@ -147,7 +147,7 @@ def killall(infra_id, ip):
     teardown(infra_id, ip)
     ib.main_uds.remove_infrastructure(infra_id)
     log.info('Finished dropping infrastructure %s', infra_id)
-    
+
 
 def teardown(infra_id, ip):
     import logging
@@ -156,7 +156,7 @@ def teardown(infra_id, ip):
     datalog = logging.getLogger('occo.data.occoapp')
 
     from occo.infobroker import main_info_broker
-     
+
     state = main_info_broker.get('infrastructure.node_instances',infra_id)
     from occo.util import flatten
     nodes = list(flatten(i.itervalues() for i in state.itervalues()))
@@ -165,7 +165,6 @@ def teardown(infra_id, ip):
     datalog.debug('DropNode:\n%s',
                   yaml.dump(drop_node_commands, default_flow_style=False))
 
-    ip.push_instructions(drop_node_commands)
+    ip.push_instructions(infra_id, drop_node_commands)
 
-    ip.push_instructions(ip.cri_drop_infrastructure(infra_id))
-    
+    ip.push_instructions(infra_id, ip.cri_drop_infrastructure(infra_id))

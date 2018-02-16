@@ -37,6 +37,7 @@ prettytable==0.7.2
 pyasn1==0.1.9
 PyChef==0.2.3
 pycparser>=2.14
+pyfcm==1.4.3
 pyOpenSSL>=16.0.0
 python-dateutil==2.4.2
 python-novaclient==3.4.0

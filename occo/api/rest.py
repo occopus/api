@@ -372,6 +372,34 @@ def drop_node(infraid, nodename, nodeid):
                         nodename=nodename,
                         nodeid=nodeid))
 
+@app.route('/infrastructures/<infraid>/scaleto/<nodename>/<int:count>', methods=['POST'])
+def scale_node(infraid, nodename, count):
+    """Scales a node in an infrastructure to a given count by creating or destroying 
+       instances of the node depending on the actual number of instances and the required number.
+
+    :param infraid: The identifier of the infrastructure.
+    :param nodename: The name of the node to be scaled up.
+    :param count: The number of instances to scale the node to.
+
+    :return type:
+        .. code::
+
+            {
+                "count": <count>,
+                "infraid": "<infraid>",
+                "method": "scaleto",
+                "nodename": "<nodename>"
+            }
+    """
+    error_if_infraid_does_not_exist(infraid)
+    error_if_nodename_does_not_exist(infraid,nodename)
+    scaling.set_scalenode_request(infraid, nodename, count)
+    return jsonify(dict(method='scaleto',
+                        infraid=infraid,
+                        nodename=nodename,
+                        count=count))
+
+
 @app.route('/infrastructures/<infraid>/notify', methods=['POST'])
 def set_notification(infraid):
     """Sets notification properties for an infrastructure.

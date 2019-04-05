@@ -17,7 +17,7 @@ import setuptools
 
 setuptools.setup(
     name='OCCO-API',
-    version='1.5',
+    version='1.6',
     author='MTA SZTAKI',
     author_email='occopus@lpds.sztaki.hu',
     namespace_packages=[
@@ -40,6 +40,7 @@ setuptools.setup(
     long_description=open('README.txt').read(),
     install_requires=[
         'Flask',
+        'flask_cors',
         'PyYAML',
         'ruamel.yaml',
         'ruamel.ordereddict',

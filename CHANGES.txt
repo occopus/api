@@ -1,3 +1,10 @@
+v1.6 - Apr 2019
+- Remove req import from setup.py
+- Fixes for docker and fcm
+- New REST method: notify
+- New REST method: scaleto
+- Add exporting ip addresses feature to occopus-maintain
+
 v1.5 - May 2017
 - Add multiuser support in handling redis server
 - Add SchemaError handling in occopus_build

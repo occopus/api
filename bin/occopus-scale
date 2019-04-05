@@ -21,28 +21,61 @@ def setup_args(cfg):
                      help='identifier of infrastructure to scale')
     cfg.add_argument('-n','--node', dest='node', required=True,
                      help='name of node to scale')
-    cfg.add_argument('-c','--count', dest='count', type=int, required=True,                     help='positive/negative number expressing the direction and magnitude of scaling')
+    cfg.add_argument('-c','--changescale', dest='changescale', required=False,
+                     help='positive/negative number expressing the direction and magnitude of scaling')
+    cfg.add_argument('-s','--setscale', dest='setscale', required=False,
+                     help='positive number expressing the number of nodes to scale to')
+
 
 if __name__ == '__main__':
 
     occoapp.setup(setup_args)
 
-    import logging
+    import sys,logging
     log = logging.getLogger('occo')
     datalog = logging.getLogger('occo.data')
- 
-    if occoapp.args.count>0:
-        log.info("Scaling up node '%s' with %i instances...",
-                 occoapp.args.node, occoapp.args.count)
-        import occo.enactor.scaling as scaling
-    	scaling.add_createnode_request(
-            occoapp.args.infraid, occoapp.args.node, occoapp.args.count)
-    
-    if occoapp.args.count<0:
-        log.info("Scaling down node '%s' with %i instances...",
-                 occoapp.args.node, abs(occoapp.args.count))
-        import occo.enactor.scaling as scaling
-    	for i in range(0,abs(occoapp.args.count)):
-            scaling.add_dropnode_request(
-                occoapp.args.infraid, occoapp.args.node, None)
 
+    if occoapp.args.changescale and occoapp.args.setscale:
+       log.error("Too many arguments: -c and -s must not be used at the same time!")
+       sys.exit(1)
+
+    if ( not occoapp.args.changescale ) and ( not occoapp.args.setscale ):
+       log.error("Too few arguments: at least -c or -s must be specified!")
+       sys.exit(1)
+
+    if occoapp.args.changescale:
+        try:
+            occoapp.args.changescale=int(occoapp.args.changescale)
+        except ValueError:
+            log.error("Positive/negative number must be specified for argument -c!")
+            sys.exit(1)
+        if occoapp.args.changescale>0:
+            log.info("Scaling up node '%s' with %i instances...",
+                     occoapp.args.node, occoapp.args.changescale)
+            import occo.enactor.scaling as scaling
+            scaling.add_createnode_request(
+                occoapp.args.infraid, occoapp.args.node, occoapp.args.changescale)
+        elif occoapp.args.changescale<0:
+            log.info("Scaling down node '%s' with %i instances...",
+                     occoapp.args.node, abs(occoapp.args.changescale))
+            import occo.enactor.scaling as scaling
+            for i in range(0,abs(occoapp.args.changescale)):
+                    scaling.add_dropnode_request(
+                        occoapp.args.infraid, occoapp.args.node, None)
+        else:
+            log.error("Incorrect argument: value for -c must be different from zero!")
+
+    if occoapp.args.setscale:
+        try:
+            occoapp.args.setscale=int(occoapp.args.setscale)
+        except ValueError:
+            log.error("Positive number must be specified for argument -s!")
+            sys.exit(1)
+        if occoapp.args.setscale>0:
+            log.info("Scaling node '%s' to %i instances...",
+                     occoapp.args.node, occoapp.args.setscale)
+            import occo.enactor.scaling as scaling
+            scaling.set_scalenode_request(
+                occoapp.args.infraid, occoapp.args.node, occoapp.args.setscale)
+        else:
+            log.error("Incorrect argument: value for -s must be greater than zero!")

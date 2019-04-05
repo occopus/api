@@ -41,6 +41,12 @@ def setup_args(cfg):
                      action='store_const', dest='strategy',
                      const='parallel', default='sequential',
                      help='parallelize processing instructions')
+    cfg.add_argument('-o','--output', 
+                     dest='output',  
+                     help='defines output file name for reporting')
+    cfg.add_argument('-f','--filter', 
+                     dest='filter',  
+                     help='defines a nodename to be included in reporting')
 
 if __name__ == '__main__':
 
@@ -70,11 +76,20 @@ if __name__ == '__main__':
 
     if occoapp.args.report:
         state = ib.main_info_broker.get('infrastructure.state', occoapp.args.infraid)
-        log.info('Report list of nodes/ip addresses:')
-        for nodename in state:
-            log.info('%s:',nodename)
-            for node in state[nodename]:
-                log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
+        if occoapp.args.output:
+          log.info('Saving list of node ip addresses to file \"%s\"...', occoapp.args.output)
+          with open(occoapp.args.output, 'w') as report_file_handler:
+            for nodename in state:
+                for node in state[nodename]:
+                    if (not occoapp.args.filter) or (occoapp.args.filter == nodename):
+                        report_file_handler.write(str(state[nodename][node]['resource_address'])+'\n')
+          log.info('Done.')
+        else:
+          log.info('Report list of nodes/ip addresses:')
+          for nodename in state:
+              log.info('%s:',nodename)
+              for node in state[nodename]:
+                  log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
     else:
         try:
             while True:

@@ -43,7 +43,6 @@ setuptools.setup(
         'flask_cors',
         'PyYAML',
         'ruamel.yaml',
-        'ruamel.ordereddict',
         'Jinja2',
         'OCCO-Util',
         'OCCO-ResourceHandler',

@@ -159,7 +159,7 @@ def teardown(infra_id, ip):
 
     state = main_info_broker.get('infrastructure.node_instances',infra_id)
     from occo.util import flatten
-    nodes = list(flatten(i.itervalues() for i in state.itervalues()))
+    nodes = list(flatten(iter(i.values()) for i in state.values()))
     drop_node_commands = [ip.cri_drop_node(n) for n in nodes]
     log.debug('Dropping nodes: %s', [n['node_id'] for n in nodes])
     datalog.debug('DropNode:\n%s',

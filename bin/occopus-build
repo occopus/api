@@ -126,4 +126,4 @@ if __name__ == '__main__':
 
         if infraid not in util.Infralist().get():
             util.Infralist().add(infraid)
-        print infraid
+        print(infraid)

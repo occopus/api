@@ -1,19 +1,16 @@
 #!/bin/bash
 
-set -ex
-
 PDIR=env/occo
 
 echo "Reseting '$PDIR'"
 
 rm -rf "$PDIR"
 
-virtualenv --no-site-packages "$PDIR"
+virtualenv --no-site-packages -p python3 "$PDIR"
 source "$PDIR"/bin/activate
-pip install --upgrade pip
 pip install -r requirements_test.txt --trusted-host pip.lpds.sztaki.hu
 
-cat /etc/grid-security/certificates/*.pem >> $(python -m requests.certs)
+#cat /etc/grid-security/certificates/*.pem >> $(python -m requests.certs)
 
 set +ex
 echo "It's dangerous to go alone. Take these:"

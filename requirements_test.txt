@@ -35,7 +35,7 @@ pika==0.9.14
 positional==1.0.1
 prettytable==0.7.2
 pyasn1==0.1.9
-PyChef==0.2.3
+PyChef==0.3.0
 pycparser>=2.14
 pyfcm==1.4.3
 pyOpenSSL>=16.0.0

@@ -59,14 +59,14 @@ if __name__ == '__main__':
     if not occoapp.args.infraid:
         if occoapp.args.list:
             if not util.Infralist().get():
-                print "No active infrastructure!"
+                print("No active infrastructure!")
             else:
-                print "List of active infrastructure:"
+                print("List of active infrastructure:")
             for i in util.Infralist().get():
-                print i
+                print(i)
             exit(0)
         else:
-           print "ERROR: No infra_id (-i) specified! "
+           print("ERROR: No infra_id (-i) specified! ")
            exit(1)
 
     from occo.infraprocessor import InfraProcessor

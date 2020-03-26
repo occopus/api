@@ -117,7 +117,7 @@ if __name__ == '__main__':
         for nodename in state:
           log.info('%s:',nodename)
           for node in state[nodename]:
-            log.info('  %s:',node)
+            log.info('  %s:',node.decode())
             if isinstance(state[nodename][node]['resource_address'],list):
               for ip in state[nodename][node]['resource_address']:
                 log.info('    %s',ip)

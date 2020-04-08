@@ -6,7 +6,7 @@ echo "Reseting '$PDIR'"
 
 rm -rf "$PDIR"
 
-virtualenv --no-site-packages -p python3 "$PDIR"
+virtualenv -p python3 "$PDIR"
 source "$PDIR"/bin/activate
 pip install -r requirements_test.txt --trusted-host pip.lpds.sztaki.hu
 

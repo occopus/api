@@ -8,7 +8,7 @@ rm -rf "$PDIR"
 
 virtualenv -p python3 "$PDIR"
 source "$PDIR"/bin/activate
-pip install -r requirements_test.txt --trusted-host pip.lpds.sztaki.hu
+pip install -r requirements_test.txt 
 
 #cat /etc/grid-security/certificates/*.pem >> $(python -m requests.certs)
 

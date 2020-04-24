@@ -15,4 +15,3 @@ pip install -r requirements_test.txt
 set +ex
 echo "It's dangerous to go alone. Take these:"
 echo "source '$PDIR/bin/activate'"
-echo "nosetests"

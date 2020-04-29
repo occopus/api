@@ -1,3 +1,9 @@
+v1.7 - Apr 2020
+- force continue maintenance of VM in case of exception
+- add -f parameter to select node to downscale
+- add reporting multiple node addresses
+- py3 porting
+
 v1.6 - Apr 2019
 - Remove req import from setup.py
 - Fixes for docker and fcm

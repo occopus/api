@@ -17,7 +17,7 @@ import setuptools
 
 setuptools.setup(
     name='OCCO-API',
-    version='1.6',
+    version='1.7',
     author='MTA SZTAKI',
     author_email='occopus@lpds.sztaki.hu',
     namespace_packages=[
@@ -43,7 +43,6 @@ setuptools.setup(
         'flask_cors',
         'PyYAML',
         'ruamel.yaml',
-        'ruamel.ordereddict',
         'Jinja2',
         'OCCO-Util',
         'OCCO-ResourceHandler',

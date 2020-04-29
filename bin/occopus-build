@@ -113,12 +113,17 @@ if __name__ == '__main__':
         datalog.debug('Submitted infrastructure dynamic state:\n%s',
                  yaml.dump(state,default_flow_style=False))
 
-        log.info('List of nodes/ip addresses:')
+        log.info('List of nodes/instances/addresses:')
         for nodename in state:
-            log.info('%s:',nodename)
-            for node in state[nodename]:
-                log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
- 
+          log.info('%s:',nodename)
+          for node in state[nodename]:
+            log.info('  %s:',node)
+            if isinstance(state[nodename][node]['resource_address'],list):
+              for ip in state[nodename][node]['resource_address']:
+                log.info('    %s',ip)
+            else:
+              log.info('    %s',state[nodename][node]['resource_address'])
+
         if infraid not in util.Infralist().get():
             util.Infralist().add(infraid)
-        print infraid
+        print(infraid)

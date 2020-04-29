@@ -62,12 +62,12 @@ class RequestException(Exception):
 def create_infra_report(infraid):
     infrastate = main_info_broker.get('infrastructure.state', infra_id=infraid)
     result = dict()
-    for nodename,instances in infrastate.iteritems():
+    for nodename,instances in infrastate.items():
         nnd = dict()
         instancevals = dict()
-        for nodeid,nivalue in instances.iteritems():
+        for nodeid,nivalue in instances.items():
             instancevals[nodeid] = dict((item,svalue) for item,svalue in
-                    nivalue.iteritems() if item in
+                    nivalue.items() if item in
                     ['resource_address','state'])
         nnd['instances'] = instancevals
         nnd['scaling'] = scaling.report(infrastate[nodename])
@@ -374,7 +374,7 @@ def drop_node(infraid, nodename, nodeid):
 
 @app.route('/infrastructures/<infraid>/scaleto/<nodename>/<int:count>', methods=['POST'])
 def scale_node(infraid, nodename, count):
-    """Scales a node in an infrastructure to a given count by creating or destroying 
+    """Scales a node in an infrastructure to a given count by creating or destroying
        instances of the node depending on the actual number of instances and the required number.
 
     :param infraid: The identifier of the infrastructure.

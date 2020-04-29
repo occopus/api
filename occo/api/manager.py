@@ -82,7 +82,7 @@ class InfrastructureMaintenanceProcess(GracefulProcess):
                 log.error('Unexpected error:')
                 log.debug(traceback.format_exc())
                 log.error(str(ex))
-                return 1
+                time.sleep(self.enactor_interval)
 
 class InfrastructureManager(object):
     """

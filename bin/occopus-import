@@ -18,7 +18,7 @@ if __name__ == '__main__':
     import occo.infobroker.kvstore
     import occo.infobroker.rediskvstore
     from ruamel import yaml
-    
+
     if not cfg.cfg_path:
         possible_config_locations = [
             os.getenv('OCCOPUS_CONFIG_PATH'),
@@ -35,8 +35,8 @@ if __name__ == '__main__':
     try:
         data = config.yaml_load_file(cfg.datafile)
     except Exception as e:
-        print repr(e)
-        print str(e)
+        print(repr(e))
+        print(str(e))
         exit(1)
 
     from occo.compiler.schema_check import SchemaChecker
@@ -44,10 +44,9 @@ if __name__ == '__main__':
     try:
         SchemaChecker.check_node_def(data)
     except SchemaError as e:
-        print e.context + e.msg
+        print(e.context + e.msg)
     else:
-        for key, value in data.iteritems():
+        for key, value in list(data.items()):
             newkey = 'node_def:'+getpass.getuser()+'@'+key.split(':',1)[1]
             kvs[newkey] = value
-        print "Successfully imported nodes: "+", ".join([key.split(':',1)[1] for key in data.keys()])
-        
+        print("Successfully imported nodes: "+", ".join([key.split(':',1)[1] for key in list(data.keys())]))

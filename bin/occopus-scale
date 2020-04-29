@@ -25,6 +25,8 @@ def setup_args(cfg):
                      help='positive/negative number expressing the direction and magnitude of scaling')
     cfg.add_argument('-s','--setscale', dest='setscale', required=False,
                      help='positive number expressing the number of nodes to scale to')
+    cfg.add_argument('-f','--filter', dest='filter', required=False,
+                     help='filter for selecting nodes for downscaling; filter can be nodeid or ip address')
 
 
 if __name__ == '__main__':
@@ -39,8 +41,18 @@ if __name__ == '__main__':
        log.error("Too many arguments: -c and -s must not be used at the same time!")
        sys.exit(1)
 
-    if ( not occoapp.args.changescale ) and ( not occoapp.args.setscale ):
-       log.error("Too few arguments: at least -c or -s must be specified!")
+    if occoapp.args.filter and occoapp.args.changescale:
+       log.error("Too many arguments: -c and -f must not be used at the same time!")
+       sys.exit(1)
+
+    if occoapp.args.filter and occoapp.args.setscale:
+       log.error("Too many arguments: -s and -f must not be used at the same time!")
+       sys.exit(1)
+
+    if ( not occoapp.args.changescale ) and \
+       ( not occoapp.args.setscale ) and \
+       ( not occoapp.args.filter ):
+       log.error("Too few arguments: at least -c, -s or -f must be specified!")
        sys.exit(1)
 
     if occoapp.args.changescale:
@@ -79,3 +91,11 @@ if __name__ == '__main__':
                 occoapp.args.infraid, occoapp.args.node, occoapp.args.setscale)
         else:
             log.error("Incorrect argument: value for -s must be greater than zero!")
+    
+    if occoapp.args.filter:
+        log.info("Scaling down instance(s) of node '%s' filtered by '%s'...",
+                 occoapp.args.node, occoapp.args.filter)
+        import occo.enactor.scaling as scaling
+        scaling.add_dropnode_request(
+            occoapp.args.infraid, occoapp.args.node, occoapp.args.filter)
+

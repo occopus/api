@@ -59,14 +59,14 @@ if __name__ == '__main__':
     if not occoapp.args.infraid:
         if occoapp.args.list:
             if not util.Infralist().get():
-                print "No active infrastructure!"
+                print("No active infrastructure!")
             else:
-                print "List of active infrastructure:"
+                print("List of active infrastructure:")
             for i in util.Infralist().get():
-                print i
+                print(i)
             exit(0)
         else:
-           print "ERROR: No infra_id (-i) specified! "
+           print("ERROR: No infra_id (-i) specified! ")
            exit(1)
 
     from occo.infraprocessor import InfraProcessor
@@ -77,19 +77,31 @@ if __name__ == '__main__':
     if occoapp.args.report:
         state = ib.main_info_broker.get('infrastructure.state', occoapp.args.infraid)
         if occoapp.args.output:
-          log.info('Saving list of node ip addresses to file \"%s\"...', occoapp.args.output)
+          log.info('Saving list of node addresses to file \"%s\"...', occoapp.args.output)
           with open(occoapp.args.output, 'w') as report_file_handler:
             for nodename in state:
-                for node in state[nodename]:
-                    if (not occoapp.args.filter) or (occoapp.args.filter == nodename):
-                        report_file_handler.write(str(state[nodename][node]['resource_address'])+'\n')
+              for node in state[nodename]:
+                if (not occoapp.args.filter) or (occoapp.args.filter in nodename):
+                  if isinstance(state[nodename][node]['resource_address'],list):
+                    report_file_handler.write(str(state[nodename][node]['resource_address'][0]))
+                    for ip in state[nodename][node]['resource_address'][1:]:
+                      report_file_handler.write(' '+str(ip))
+                    report_file_handler.write('\n')
+                  else:
+                    report_file_handler.write(str(state[nodename][node]['resource_address'])+'\n')
           log.info('Done.')
         else:
-          log.info('Report list of nodes/ip addresses:')
+          log.info('Report list of nodes/instances/addresses:')
           for nodename in state:
+            if (not occoapp.args.filter) or (occoapp.args.filter in nodename):
               log.info('%s:',nodename)
               for node in state[nodename]:
-                  log.info('  %s (%s)',state[nodename][node]['resource_address'],node)
+                log.info('  %s:',node)
+                if isinstance(state[nodename][node]['resource_address'],list):
+                  for ip in state[nodename][node]['resource_address']:
+                    log.info('    %s',ip)
+                else:
+                  log.info('    %s',state[nodename][node]['resource_address'])
     else:
         try:
             while True:

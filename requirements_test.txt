@@ -1,6 +1,7 @@
 adal==1.2.2
 azure-common==1.1.25
 azure-mgmt-compute==12.0.0
+azure-mgmt-containerinstance==1.5.0
 azure-mgmt-network==10.1.0
 azure-mgmt-resource==9.0.0
 Babel==2.8.0

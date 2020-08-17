@@ -17,7 +17,7 @@ import setuptools
 
 setuptools.setup(
     name='OCCO-API',
-    version='1.7',
+    version='1.8',
     author='MTA SZTAKI',
     author_email='occopus@lpds.sztaki.hu',
     namespace_packages=[

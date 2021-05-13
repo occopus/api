@@ -17,6 +17,7 @@ debtcollector==2.0.1
 dicttoxml==1.7.4
 dnspython==1.16.0
 docker==4.2.0
+dogpile.cache==0.6.5
 Flask==1.1.2
 Flask-Cors==3.0.8
 idna==2.9
@@ -34,6 +35,7 @@ ndg-httpsclient==0.5.1
 netaddr==0.7.19
 netifaces==0.10.9
 oauthlib==3.1.0
+openstacksdk==0.55.0
 os-service-types==1.7.0
 oslo.i18n==4.0.1
 oslo.serialization==3.1.1

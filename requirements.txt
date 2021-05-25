@@ -7,6 +7,7 @@ python_novaclient==2.33.0
 dateutils==0.6.6
 dicttoxml==1.7.4
 docker==2.5.1
+dogpile.cache==0.6.5
 Flask==1.0.0
 itsdangerous==0.24
 Jinja2==2.10.1
@@ -38,6 +39,7 @@ iso8601>=0.1.9
 monotonic>=0.6
 funcsigs>=0.4
 keystoneauth1>=2.1.0
+openstacksdk==0.55.0
 python-keystoneclient>=1.6.0
 positional==1.0.1
 netaddr==0.7.18

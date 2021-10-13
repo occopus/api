@@ -27,6 +27,8 @@ from occo.infobroker import main_info_broker
 from occo.infobroker import main_uds
 from occo.exceptions import KeyNotFoundError, ArgumentError
 
+import occo.infobroker as ib
+
 import logging
 
 from flask import Flask, request, jsonify
@@ -419,6 +421,44 @@ def set_notification(infraid):
     notify_info = request.stream.read()
     main_uds.set_infrastructure_notification(infraid, notify_info)
     return jsonify(dict(infraid=infraid))
+
+
+@app.route('/infrastructures/<infraid>/cost', methods=['GET'])
+def get_cost(infraid):
+    """Query cost of the infrastructure.
+
+    :param infraid: The identifier of the infrastructure.
+
+    :return type:
+        .. code::
+
+            {
+                "totalcost": <totalcost>,
+                "nodecosts" {
+                    "<nodename>": {
+                        "<nodeid>": <nodeidcost>,
+                        ...
+                    },
+                    ...
+                }
+            }
+    """
+    error_if_infraid_does_not_exist(infraid)
+    infrastate = main_info_broker.get('infrastructure.state', infra_id=infraid)
+    result = dict()
+    result['totalcost'] = 0
+    for nodename,instances in infrastate.items():
+        result[nodename] = dict()
+        for nodeid,nivalue in instances.items():
+            cost = 0
+            try:
+                cost = ib.main_resourcehandler.get_cost(nivalue)
+            except Exception as e:
+                pass
+            result['totalcost'] += cost
+            result[nodename][nodeid] = cost
+    return jsonify(result)
+
 
 @app.route('/info/<key>', methods=['GET'])
 def info(key):

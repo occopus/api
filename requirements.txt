@@ -26,7 +26,7 @@ requests==2.20.0
 six==1.8.0
 Werkzeug==0.15.3
 websocket-client==0.32.0
-oslo.utils==3.7.0
+oslo.utils==4.10.1
 oslo.i18n==2.7.0
 oslo.serialization==1.11
 oslo.config==2.6.0

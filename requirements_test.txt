@@ -43,7 +43,7 @@ oslo.utils==4.1.1
 pbr==5.4.5
 pika==1.1.0
 prettytable==0.7.2
-protobuf==3.6.1
+protobuf==3.18.3
 pyasn1==0.4.8
 PyChef==0.3.0
 pycparser==2.20

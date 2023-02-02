@@ -24,7 +24,7 @@ PyYAML==4.2b1
 redis==2.10.3
 requests==2.20.0
 six==1.8.0
-Werkzeug==0.15.3
+Werkzeug==0.15.5
 websocket-client==0.32.0
 oslo.utils==3.7.0
 oslo.i18n==2.7.0

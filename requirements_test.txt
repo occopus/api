@@ -67,7 +67,7 @@ unicodecsv==0.14.1
 urllib3==1.25.9
 voms-auth-system-openstack==1.1
 websocket-client==0.57.0
-Werkzeug==1.0.1
+Werkzeug==2.2.3
 wrapt==1.12.1
 
 -e ../util
